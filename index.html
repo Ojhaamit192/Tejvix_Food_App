@@ -404,7 +404,7 @@ let currentOrder = null;
 const cfg = JSON.parse(localStorage.getItem("tejvix_cfg") || "{}");
 cfg.name = cfg.name || "Tejvix";
 cfg.whatsapp = cfg.whatsapp || "911234567890";  // placeholder — set in setup
-cfg.upi = cfg.upi || "tejvix@upi";              // placeholder — set in setup
+cfg.upi = cfg.upi || "aojha641-1@okicici";     // default UPI ID — change in setup screen anytime
 cfg.sheet = cfg.sheet || "";                     // Apps Script web app URL
 
 /* ---------------- Navigation ---------------- */
@@ -613,7 +613,7 @@ function placeOrder(){
 
 /* ---------------- Payment ---------------- */
 function openUpiPayment(){
-  const amt = currentOrder.total;
+  const amt = currentOrder.total.toFixed(2);
   const note = encodeURIComponent("Tejvix order " + currentOrder.token);
   const upiUrl = `upi://pay?pa=${encodeURIComponent(cfg.upi)}&pn=${encodeURIComponent(cfg.name)}&am=${amt}&cu=INR&tn=${note}`;
   window.location.href = upiUrl;
