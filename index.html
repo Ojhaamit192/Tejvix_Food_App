@@ -615,7 +615,8 @@ function placeOrder(){
 function openUpiPayment(){
   const amt = currentOrder.total.toFixed(2);
   const note = encodeURIComponent("Tejvix order " + currentOrder.token);
-  const upiUrl = `upi://pay?pa=${encodeURIComponent(cfg.upi)}&pn=${encodeURIComponent(cfg.name)}&am=${amt}&cu=INR&tn=${note}`;
+  const txnRef = encodeURIComponent(currentOrder.token.replace(/[^a-zA-Z0-9]/g,"") + Date.now());
+  const upiUrl = `upi://pay?pa=${encodeURIComponent(cfg.upi)}&pn=${encodeURIComponent(cfg.name)}&am=${amt}&cu=INR&tn=${note}&tr=${txnRef}`;
   window.location.href = upiUrl;
   document.getElementById("confirmPayBtn").style.display = "block";
 }
