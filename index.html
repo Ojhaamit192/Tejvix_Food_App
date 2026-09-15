@@ -298,6 +298,10 @@
       <div class="hint">Amount to pay</div>
       <div style="font-family:'Fraunces',serif;font-weight:800;font-size:30px;" id="payAmount">₹0</div>
     </div>
+    <div class="card" style="text-align:center;">
+      <div class="hint" style="margin-bottom:8px;">Or scan to pay</div>
+      <div id="upiQrBox" style="display:flex;justify-content:center;"></div>
+    </div>
     <button class="primary-btn" onclick="openUpiPayment()">Pay with UPI / PhonePe / GPay</button>
     <div class="hint" style="text-align:center;margin-top:10px;">Complete the payment in your UPI app, then confirm below.</div>
     <button class="secondary-btn" id="confirmPayBtn" style="display:none;" onclick="confirmPayment()">I've completed the payment</button>
@@ -609,15 +613,27 @@ function placeOrder(){
   document.getElementById("payAmount").textContent = "₹"+total;
   document.getElementById("confirmPayBtn").style.display = "none";
   goTo("pay");
+  renderPaymentQr();
 }
 
 /* ---------------- Payment ---------------- */
-function openUpiPayment(){
+function buildUpiUrl(){
   const amt = currentOrder.total.toFixed(2);
   const note = encodeURIComponent("Tejvix order " + currentOrder.token);
   const txnRef = encodeURIComponent(currentOrder.token.replace(/[^a-zA-Z0-9]/g,"") + Date.now());
-  const upiUrl = `upi://pay?pa=${encodeURIComponent(cfg.upi)}&pn=${encodeURIComponent(cfg.name)}&am=${amt}&cu=INR&tn=${note}&tr=${txnRef}`;
-  window.location.href = upiUrl;
+  return `upi://pay?pa=${encodeURIComponent(cfg.upi)}&pn=${encodeURIComponent(cfg.name)}&am=${amt}&cu=INR&tn=${note}&tr=${txnRef}`;
+}
+function renderPaymentQr(){
+  const box = document.getElementById("upiQrBox");
+  box.innerHTML = "";
+  new QRCode(box, {
+    text: buildUpiUrl(),
+    width: 180, height: 180,
+    colorDark: "#1B3A2B", colorLight: "#ffffff"
+  });
+}
+function openUpiPayment(){
+  window.location.href = buildUpiUrl();
   document.getElementById("confirmPayBtn").style.display = "block";
 }
 
