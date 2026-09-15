@@ -239,6 +239,9 @@
   </div>
   <div class="tabs" id="tabs"></div>
   <div class="menu-wrap" id="menuWrap"></div>
+  <div style="text-align:center;padding:10px 16px 100px;">
+    <span class="hint" style="cursor:pointer;text-decoration:underline;" onclick="goTo('legal')">Terms & Conditions · Privacy Policy</span>
+  </div>
   <div class="cart-bar" id="cartBar" onclick="goTo('cart')">
     <span class="cnt" id="cartBarText">0 items</span>
     <span class="go">View cart →</span>
@@ -326,9 +329,49 @@
       <div class="ticket-row"><span class="k">Amount paid</span><span class="v" id="confAmount">—</span></div>
     </div>
     <button class="primary-btn" style="background:#25D366;margin-top:16px;" onclick="openWhatsApp()">Confirm order on WhatsApp</button>
+    <div class="hint" style="text-align:center;font-weight:700;color:var(--chili);margin-top:10px;">Please show your payment confirmation on counter while visiting.</div>
     <div class="hint" style="text-align:center;">Your order has already been placed — this order can no longer be cancelled.</div>
 
     <button class="secondary-btn" onclick="startNewOrder()">Start a new order</button>
+    <div style="text-align:center;margin-top:16px;">
+      <span class="hint" style="cursor:pointer;text-decoration:underline;" onclick="goTo('legal')">Terms & Conditions · Privacy Policy</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TERMS & PRIVACY SCREEN ============ -->
+<div class="screen" id="screen-legal">
+  <div class="topbar" style="padding:16px 20px;">
+    <div class="brand-row">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="back-btn" onclick="goTo('menu')" style="background:rgba(255,255,255,0.12);border-color:transparent;color:#fff;">←</div>
+        <div class="brand-name" style="font-size:19px;">Terms & Privacy</div>
+      </div>
+    </div>
+  </div>
+  <div class="page">
+    <div class="card">
+      <h3 style="margin-bottom:10px;">Terms & Conditions</h3>
+      <p style="font-size:13.5px;line-height:1.6;color:#4a4438;">
+        This app is provided only as a platform for browsing the menu and booking/placing food orders with the restaurant.
+        The responsibility for food quality, hygiene, preparation, and any related matter rests solely with the restaurant preparing and serving the food.
+        Once an order is placed and payment is completed, the order cannot be cancelled or refunded through this app.
+        Menu items, prices, and availability are subject to change without prior notice.
+        Please retain your payment confirmation and show it at the counter while collecting your order.
+      </p>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:10px;">Privacy Policy</h3>
+      <p style="font-size:13.5px;line-height:1.6;color:#4a4438;">
+        We do not collect or store any personal data beyond what you provide to place your order (your name and phone number),
+        which is used only to confirm and prepare your order and to record it for the restaurant's own record-keeping.
+        No data collected through this app is sold, rented, or shared with any third party.
+        This app does not use tracking cookies or third-party advertising.
+      </p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <p style="font-size:12.5px;color:#8a806c;margin:0;">© Tejvix. All rights reserved.</p>
+    </div>
   </div>
 </div>
 
@@ -657,10 +700,12 @@ function renderPaymentQr(){
 
 function confirmPayment(){
   // Customer scans the QR, pays in their own UPI app, then taps this button to confirm.
-  logOrderToSheet(currentOrder);
   fillConfirmation(currentOrder);
   goTo("confirm");
-  setTimeout(openWhatsApp, 500);
+  setTimeout(()=>{
+    openWhatsApp();
+    logOrderToSheet(currentOrder); // logged right after WhatsApp confirmation opens
+  }, 500);
 }
 
 function fillConfirmation(order){
@@ -684,7 +729,8 @@ function openWhatsApp(){
     `Total paid: ₹${o.total}`,
     `Payment: Completed via UPI`,
     ``,
-    `Your order will be prepared in 45 minutes. Please come and collect from the restaurant.`
+    `Your order will be prepared in 45 minutes. Please come and collect from the restaurant.`,
+    `Please show this payment confirmation at the counter while collecting your order.`
   ];
   const text = encodeURIComponent(lines.join("\n"));
   window.open(`https://wa.me/${cfg.whatsapp}?text=${text}`, "_blank");
