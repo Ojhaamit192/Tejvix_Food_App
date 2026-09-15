@@ -299,12 +299,12 @@
       <div style="font-family:'Fraunces',serif;font-weight:800;font-size:30px;" id="payAmount">₹0</div>
     </div>
     <div class="card" style="text-align:center;">
-      <div class="hint" style="margin-bottom:8px;">Or scan to pay</div>
+      <div class="hint" style="margin-bottom:8px;">Scan to pay</div>
       <div id="upiQrBox" style="display:flex;justify-content:center;"></div>
+      <div class="hint" style="margin-top:10px;">Scan this QR code using any UPI app (PhonePe, GPay, Paytm, etc.) to pay.</div>
     </div>
-    <button class="primary-btn" onclick="openUpiPayment()">Pay with UPI / PhonePe / GPay</button>
-    <div class="hint" style="text-align:center;margin-top:10px;">Complete the payment in your UPI app, then confirm below.</div>
-    <button class="secondary-btn" id="confirmPayBtn" style="display:none;" onclick="confirmPayment()">I've completed the payment</button>
+    <div class="hint" id="payWaitMsg" style="text-align:center;margin-top:10px;">Please scan the QR code and complete the payment in your UPI app. The confirm button will appear here shortly…</div>
+    <button class="primary-btn" id="confirmPayBtn" style="display:none;" onclick="confirmPayment()">I've completed the payment</button>
   </div>
 </div>
 
@@ -611,7 +611,6 @@ function placeOrder(){
 
   document.getElementById("payToken").textContent = currentOrder.token;
   document.getElementById("payAmount").textContent = "₹"+total;
-  document.getElementById("confirmPayBtn").style.display = "none";
   goTo("pay");
   renderPaymentQr();
 }
@@ -631,14 +630,32 @@ function renderPaymentQr(){
     width: 180, height: 180,
     colorDark: "#1B3A2B", colorLight: "#ffffff"
   });
-}
-function openUpiPayment(){
-  window.location.href = buildUpiUrl();
-  document.getElementById("confirmPayBtn").style.display = "block";
+
+  // Reset wait state every time a fresh payment screen is shown
+  const waitMsg = document.getElementById("payWaitMsg");
+  const confirmBtn = document.getElementById("confirmPayBtn");
+  waitMsg.style.display = "block";
+  confirmBtn.style.display = "none";
+
+  const WAIT_SECONDS = 50;
+  let remaining = WAIT_SECONDS;
+  waitMsg.textContent = `Please scan the QR code and complete the payment in your UPI app. Confirm button will appear in ${remaining}s…`;
+
+  if(window._payTimerInterval) clearInterval(window._payTimerInterval);
+  window._payTimerInterval = setInterval(()=>{
+    remaining--;
+    if(remaining>0){
+      waitMsg.textContent = `Please scan the QR code and complete the payment in your UPI app. Confirm button will appear in ${remaining}s…`;
+    } else {
+      clearInterval(window._payTimerInterval);
+      waitMsg.style.display = "none";
+      confirmBtn.style.display = "block";
+    }
+  }, 1000);
 }
 
 function confirmPayment(){
-  // Demo flow: customer confirms payment completed in their UPI app.
+  // Customer scans the QR, pays in their own UPI app, then taps this button to confirm.
   logOrderToSheet(currentOrder);
   fillConfirmation(currentOrder);
   goTo("confirm");
@@ -656,7 +673,7 @@ function fillConfirmation(order){
 function openWhatsApp(){
   const o = currentOrder;
   const lines = [
-    `*New order — ${o.token}*`,
+    `*Payment completed — order ${o.token}*`,
     `Name: ${o.name}`,
     `Phone: ${o.phone}`,
     `Type: ${o.orderType==="dinein"?"Dine-in":"Takeaway"}`,
@@ -664,7 +681,9 @@ function openWhatsApp(){
     ...o.items.map(i=>`${i.name} x${i.qty} — ₹${i.price*i.qty}`),
     ``,
     `Total paid: ₹${o.total}`,
-    `Payment: Completed via UPI`
+    `Payment: Completed via UPI`,
+    ``,
+    `Your order will be prepared in 45 minutes. Please come and collect from the restaurant.`
   ];
   const text = encodeURIComponent(lines.join("\n"));
   window.open(`https://wa.me/${cfg.whatsapp}?text=${text}`, "_blank");
