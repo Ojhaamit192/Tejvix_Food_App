@@ -327,6 +327,7 @@
     </div>
     <button class="primary-btn" style="background:#25D366;margin-top:16px;" onclick="openWhatsApp()">Confirm order on WhatsApp</button>
     <div class="hint" style="text-align:center;">Your order has already been placed — this order can no longer be cancelled.</div>
+
     <button class="secondary-btn" onclick="startNewOrder()">Start a new order</button>
   </div>
 </div>
@@ -407,7 +408,7 @@ let currentOrder = null;
 
 const cfg = JSON.parse(localStorage.getItem("tejvix_cfg") || "{}");
 cfg.name = cfg.name || "Tejvix";
-cfg.whatsapp = cfg.whatsapp || "911234567890";  // placeholder — set in setup
+cfg.whatsapp = cfg.whatsapp || "917367814387";  // Tejvix Digital Solutions WhatsApp business number
 cfg.upi = cfg.upi || "aojha641-1@okicici";     // default UPI ID — change in setup screen anytime
 cfg.sheet = cfg.sheet || "";                     // Apps Script web app URL
 
