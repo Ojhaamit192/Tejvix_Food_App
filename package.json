@@ -1,0 +1,9 @@
+{
+  "name": "tejvix-food-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-restaurant dine-in & takeaway ordering + kitchen platform (Tejvix Kitchen, Bihar Swaad, etc.) with Supabase, deployed on Netlify.",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}

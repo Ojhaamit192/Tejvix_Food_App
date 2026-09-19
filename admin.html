@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Tejvix Food — Kitchen</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#1B3A2B; --gold:#E8A33D; --gold-2:#C97F1F; --paper:#FBF3E3; --paper-2:#F3E6CB; --char:#241F19; --chili:#C1442E; --line: rgba(36,31,25,0.14); --radius:14px; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{ background:var(--paper); color:var(--char); font-family:'Manrope',sans-serif; min-height:100vh; }
+  h1,h2,h3{ font-family:'Fraunces',serif; font-weight:800; margin:0; }
+  .topbar{ background:var(--ink); color:var(--paper); padding:16px 20px; display:flex; align-items:center; justify-content:space-between; border-bottom:4px solid var(--gold); }
+  .brand-name{ font-family:'Fraunces',serif; font-weight:800; font-size:19px; }
+  .pin-badge{ font-size:11px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); padding:5px 10px; border-radius:100px; cursor:pointer; }
+
+  .login-wrap{ max-width:360px; margin:60px auto; padding:0 20px; }
+  .card{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:18px; margin-bottom:14px; }
+  input[type=text],input[type=password]{ width:100%; padding:12px 13px; border-radius:10px; border:1.5px solid var(--line); font-size:16px; font-family:'Manrope',sans-serif; }
+  .primary-btn{ width:100%; background:var(--chili); color:#fff; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:800; cursor:pointer; margin-top:10px; }
+  .secondary-btn{ background:#fff; color:var(--ink); border:1.5px solid var(--ink); border-radius:10px; padding:8px 14px; font-size:13px; font-weight:800; cursor:pointer; }
+  .error-text{ color:var(--chili); font-size:13px; font-weight:700; margin-top:8px; display:none; }
+
+  .tabs{ display:flex; gap:6px; padding:12px 16px 0; max-width:980px; margin:0 auto; }
+  .tab{ padding:9px 16px; border-radius:100px 100px 0 0; background:var(--paper-2); font-weight:800; font-size:13px; cursor:pointer; border:1px solid var(--line); border-bottom:none; }
+  .tab.active{ background:#fff; }
+  .panel{ max-width:980px; margin:0 auto; padding:16px; display:none; }
+  .panel.active{ display:block; }
+
+  .board{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+  @media (max-width:820px){ .board{ grid-template-columns:1fr; } }
+  .col-head{ font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:0.05em; color:var(--gold-2); margin-bottom:8px; display:flex; justify-content:space-between; }
+  .order-card{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:13px; margin-bottom:12px; }
+  .order-card.dinein{ border-left:4px solid var(--ink); }
+  .order-card.takeaway{ border-left:4px solid var(--gold); }
+  .order-top{ display:flex; justify-content:space-between; align-items:baseline; }
+  .order-token{ font-family:'Fraunces',serif; font-weight:900; font-size:22px; color:var(--chili); }
+  .order-time{ font-size:11px; color:#8a806c; }
+  .order-meta{ font-size:12.5px; color:#5b5347; margin:3px 0 8px; }
+  .order-items{ font-size:13px; line-height:1.5; margin-bottom:8px; }
+  .order-notes{ font-size:12px; font-style:italic; color:var(--gold-2); margin-bottom:8px; }
+  .unverified-badge{ display:inline-flex;align-items:center;gap:5px; font-size:11px; font-weight:800; color:#B45309; background:rgba(232,163,61,0.22); padding:4px 9px; border-radius:6px; margin-bottom:8px; }
+  .utr-line{ font-size:11.5px; color:#5b5347; margin-bottom:8px; font-family:monospace; }
+  .btn-verify{ background:#B45309; color:#fff; }
+  .order-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  .btn-sm{ flex:1; min-width:100px; padding:8px 10px; border-radius:8px; border:none; font-weight:800; font-size:12.5px; cursor:pointer; }
+  .btn-advance{ background:var(--ink); color:#fff; }
+  .btn-cancel{ background:#fff; color:var(--chili); border:1.5px solid var(--chili); }
+  .empty-col{ font-size:12.5px; color:#a89f8c; padding:14px 0; text-align:center; }
+
+  .resv-card{ background:#fff; border:1px solid var(--line); border-left:4px solid var(--gold); border-radius:12px; padding:13px; margin-bottom:12px; }
+  .resv-top{ display:flex; justify-content:space-between; align-items:baseline; }
+  .resv-when{ font-family:'Fraunces',serif; font-weight:800; font-size:16px; color:var(--ink); }
+  .resv-paid{ font-size:11px; font-weight:800; color:#2E7D32; background:rgba(46,125,50,0.12); padding:3px 8px; border-radius:6px; }
+  .resv-meta{ font-size:12.5px; color:#5b5347; margin:5px 0 8px; }
+  .resv-preorder{ font-size:12.5px; color:var(--gold-2); font-style:italic; margin-bottom:8px; }
+
+  .menu-row{ display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid var(--line); border-radius:10px; padding:11px 14px; margin-bottom:8px; }  .menu-row .nm{ font-weight:700; font-size:14px; }
+  .menu-row .cat{ font-size:11.5px; color:#8a806c; }
+  .switch{ width:42px;height:24px;border-radius:100px; background:#ddd; position:relative; cursor:pointer; flex:0 0 auto; }
+  .switch::after{ content:""; position:absolute; top:2px;left:2px; width:20px;height:20px; border-radius:50%; background:#fff; transition:left .15s; box-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .switch.on{ background:#2E7D32; }
+  .switch.on::after{ left:20px; }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+  @media (min-width:640px){ .stat-grid{ grid-template-columns:repeat(5,1fr); } }
+  .stat-card{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; text-align:center; }
+  .stat-num{ font-family:'Fraunces',serif; font-weight:900; font-size:26px; color:var(--ink); }
+  .stat-lbl{ font-size:11.5px; color:#8a806c; margin-top:4px; }
+
+  .refresh-hint{ text-align:center; font-size:11.5px; color:#a89f8c; margin:10px 0 20px; }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="topbar"><div class="brand-name">Tejvix Food — Kitchen</div></div>
+  <div class="login-wrap">
+    <div class="card">
+      <label style="font-size:12px;font-weight:800;text-transform:uppercase;color:#7a7261;">Restaurant</label>
+      <div id="restoLabel" style="font-weight:800;font-size:16px;margin:6px 0 14px;">—</div>
+      <label style="font-size:12px;font-weight:800;text-transform:uppercase;color:#7a7261;">Staff PIN</label>
+      <input type="password" id="pinInput" placeholder="Enter PIN" inputmode="numeric" style="margin-top:6px;">
+      <button class="primary-btn" onclick="login()">Open kitchen panel</button>
+      <div class="error-text" id="loginError">Incorrect PIN — please try again.</div>
+    </div>
+  </div>
+</div>
+
+<div id="app-screen" style="display:none;">
+  <div class="topbar">
+    <div class="brand-name" id="appRestoName">Kitchen</div>
+    <div class="pin-badge" onclick="logout()">Log out</div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" id="tab-orders" onclick="switchTab('orders')">Live Orders</div>
+    <div class="tab" id="tab-reservations" onclick="switchTab('reservations')">Reservations</div>
+    <div class="tab" id="tab-menu" onclick="switchTab('menu')">Menu</div>
+    <div class="tab" id="tab-analytics" onclick="switchTab('analytics')">Today</div>
+  </div>
+
+  <div class="panel active" id="panel-orders">
+    <div class="board" id="board"></div>
+    <div class="refresh-hint">Live orders refresh automatically every 5 seconds.</div>
+  </div>
+
+  <div class="panel" id="panel-reservations">
+    <div id="reservationsList"></div>
+  </div>
+
+  <div class="panel" id="panel-menu">
+    <div id="menuList"></div>
+  </div>
+
+  <div class="panel" id="panel-analytics">
+    <div class="stat-grid" id="statGrid"></div>
+    <div class="card" style="margin-top:14px;" id="statExtra"></div>
+  </div>
+</div>
+
+<script>
+const API = "/api";
+const urlParams = new URLSearchParams(window.location.search);
+const slug = urlParams.get("restaurant") || "";
+let pin = localStorage.getItem("tejvixfood_pin_"+slug) || "";
+let ordersPoll = null;
+let audioCtx = null;
+let lastOrderCount = -1;
+
+document.getElementById("restoLabel").textContent = slug || "(missing ?restaurant= in URL)";
+
+function beep(){
+  try{
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = "sine"; o.frequency.value = 880;
+    g.gain.value = 0.15;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + 0.18);
+  }catch(e){ /* audio isn't essential */ }
+}
+
+async function login(){
+  const entered = document.getElementById("pinInput").value.trim();
+  if(!entered){ return; }
+  pin = entered;
+  const res = await fetch(`${API}/orders?restaurant=${encodeURIComponent(slug)}&pin=${encodeURIComponent(pin)}`);
+  if(!res.ok){
+    document.getElementById("loginError").style.display = "block";
+    return;
+  }
+  localStorage.setItem("tejvixfood_pin_"+slug, pin);
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app-screen").style.display = "block";
+  document.getElementById("appRestoName").textContent = slug;
+  startOrdersPoll();
+  loadMenu();
+}
+function logout(){
+  localStorage.removeItem("tejvixfood_pin_"+slug);
+  location.reload();
+}
+
+function switchTab(name){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.getElementById("tab-"+name).classList.add("active");
+  document.getElementById("panel-"+name).classList.add("active");
+  if(name==="reservations") loadReservations();
+  if(name==="menu") loadMenu();
+  if(name==="analytics") loadAnalytics();
+}
+
+/* ---------------- Live orders board ---------------- */
+function startOrdersPoll(){
+  loadOrders();
+  if(ordersPoll) clearInterval(ordersPoll);
+  ordersPoll = setInterval(loadOrders, 5000);
+}
+async function loadOrders(){
+  try{
+    const res = await fetch(`${API}/orders?restaurant=${encodeURIComponent(slug)}&pin=${encodeURIComponent(pin)}`);
+    if(!res.ok) return;
+    const data = await res.json();
+    const orders = data.orders || [];
+    if(lastOrderCount >= 0 && orders.length > lastOrderCount) beep();
+    lastOrderCount = orders.length;
+    renderBoard(orders);
+  }catch(e){ /* keep polling silently on a transient network error */ }
+}
+function timeAgo(iso){
+  const mins = Math.max(0, Math.round((Date.now() - new Date(iso).getTime())/60000));
+  return mins===0 ? "just now" : `${mins} min ago`;
+}
+function timeUntil(iso){
+  if(!iso) return "soon";
+  const mins = Math.round((new Date(iso).getTime() - Date.now())/60000);
+  if(mins<=0) return "any moment";
+  return `in ~${mins} min`;
+}
+function renderBoard(orders){
+  const cols = { received: [], preparing: [], ready: [] };
+  orders.forEach(o=>{ if(cols[o.status]) cols[o.status].push(o); });
+
+  const board = document.getElementById("board");
+  const colDefs = [
+    { key:"received", label:"New", next:"preparing", nextLabel:"Start preparing" },
+    { key:"preparing", label:"Preparing", next:"ready", nextLabel:"Mark ready" },
+    { key:"ready", label:"Ready", next:"served", nextLabel:"Mark served" },
+  ];
+  board.innerHTML = "";
+  colDefs.forEach(col=>{
+    const wrap = document.createElement("div");
+    const list = cols[col.key];
+    wrap.innerHTML = `<div class="col-head"><span>${col.label}</span><span>${list.length}</span></div>`;
+    if(!list.length){
+      wrap.innerHTML += `<div class="empty-col">No orders</div>`;
+    } else {
+      list.forEach(o=>{
+        const itemsHtml = o.items.map(i=>`${i.qty}× ${i.name}`).join("<br>");
+        const typeLabel = o.order_type==="dinein" ? `Dine-in · Table ${o.table_number||"—"}` : "Takeaway";
+        const isUnverified = o.payment_method==="upi" && o.payment_status==="unverified";
+        const card = document.createElement("div");
+        card.className = "order-card " + o.order_type;
+        const actionsHtml = isUnverified
+          ? `<button class="btn-sm btn-verify" onclick="verifyPayment('${o.id}')">✅ Confirm payment</button>
+             <button class="btn-sm btn-cancel" onclick="cancelOrder('${o.id}')">Cancel</button>`
+          : `<button class="btn-sm btn-advance" onclick="advance('${o.id}','${col.next}')">${col.nextLabel}</button>
+             <button class="btn-sm btn-cancel" onclick="cancelOrder('${o.id}')">Cancel</button>`;
+        card.innerHTML = `
+          <div class="order-top"><span class="order-token">${o.token}</span><span class="order-time">${timeAgo(o.created_at)}</span></div>
+          <div class="order-meta">${typeLabel} · ${o.name} · ₹${o.total} · ${o.payment_method==="upi"?"UPI":o.payment_method==="razorpay"?"Razorpay ✅":"Counter"}</div>
+          ${isUnverified ? `<div class="unverified-badge">⚠ Payment unverified — auto-cancels ${timeUntil(o.payment_verify_deadline)}</div>
+             <div class="utr-line">UTR: ${o.payment_utr||"—"}</div>` : ""}
+          <div class="order-items">${itemsHtml}</div>
+          ${o.notes ? `<div class="order-notes">Note: ${o.notes}</div>` : ""}
+          <div class="order-actions">${actionsHtml}</div>`;
+        wrap.appendChild(card);
+      });
+    }
+    board.appendChild(wrap);
+  });
+}
+async function advance(orderId, nextStatus){
+  const res = await fetch(`${API}/status`, {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ restaurant:slug, pin, order_id:orderId, status:nextStatus })
+  });
+  if(!res.ok){
+    const data = await res.json().catch(()=>({}));
+    alert(data.error || "Couldn't update this order.");
+  }
+  loadOrders();
+}
+async function verifyPayment(orderId){
+  if(!confirm("Have you matched the amount and UTR against your own UPI/bank notification?")) return;
+  try{
+    const res = await fetch(`${API}/verify_payment`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ restaurant:slug, pin, order_id:orderId })
+    });
+    if(!res.ok){
+      const data = await res.json().catch(()=>({}));
+      alert(data.error || "Couldn't confirm this payment.");
+      return;
+    }
+    loadOrders();
+  }catch(e){ alert("Network error — please try again."); }
+}
+async function cancelOrder(orderId){
+  if(!confirm("Cancel this order?")) return;
+  await fetch(`${API}/status`, {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ restaurant:slug, pin, order_id:orderId, status:"cancelled" })
+  });
+  loadOrders();
+}
+
+/* ---------------- Reservations (advance table bookings) ---------------- */
+async function loadReservations(){
+  const wrap = document.getElementById("reservationsList");
+  wrap.innerHTML = `<div class="card">Loading reservations…</div>`;
+  try{
+    const res = await fetch(`${API}/reservations?restaurant=${encodeURIComponent(slug)}&pin=${encodeURIComponent(pin)}`);
+    const data = await res.json();
+    const list = data.reservations || [];
+    if(!list.length){
+      wrap.innerHTML = `<div class="card">No upcoming table reservations.</div>`;
+      return;
+    }
+    wrap.innerHTML = "";
+    list.forEach(r=>{
+      const when = new Date(r.scheduled_at).toLocaleString("en-IN",{weekday:"short", day:"numeric", month:"short", hour:"numeric", minute:"2-digit", hour12:true});
+      const isUnverified = r.payment_status==="unverified";
+      const card = document.createElement("div");
+      card.className = "resv-card";
+      card.innerHTML = `
+        <div class="resv-top">
+          <span class="resv-when">${when}</span>
+          <span class="resv-paid">${r.payment_status==="paid" ? "Paid ₹"+r.total : "Unverified"}</span>
+        </div>
+        <div class="resv-meta">${r.name} · ${r.phone} · ${r.party_size} guest${r.party_size>1?'s':''}</div>
+        ${isUnverified ? `<div class="unverified-badge">⚠ Auto-cancels ${timeUntil(r.payment_verify_deadline)}</div><div class="utr-line">UTR: ${r.payment_utr||"—"}</div>` : ""}
+        ${r.pre_ordered ? `<div class="resv-preorder">Pre-ordered: ${r.pre_ordered}</div>` : `<div class="resv-preorder">No pre-order — will order on arrival</div>`}
+        ${r.notes ? `<div class="resv-meta">Note: ${r.notes}</div>` : ""}
+        <div class="order-actions">
+          ${isUnverified
+            ? `<button class="btn-sm btn-verify" onclick="verifyReservationPayment('${r.id}')">✅ Confirm payment</button>`
+            : `<button class="btn-sm btn-advance" onclick="checkInReservation('${r.id}')">Guest arrived — check in</button>`}
+        </div>`;
+      wrap.appendChild(card);
+    });
+  }catch(e){
+    wrap.innerHTML = `<div class="card">Couldn't load reservations.</div>`;
+  }
+}
+async function verifyReservationPayment(orderId){
+  if(!confirm("Have you matched the amount and UTR against your own UPI/bank notification?")) return;
+  try{
+    const res = await fetch(`${API}/verify_payment`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ restaurant:slug, pin, order_id:orderId })
+    });
+    if(!res.ok){
+      const data = await res.json().catch(()=>({}));
+      alert(data.error || "Couldn't confirm this payment.");
+      return;
+    }
+    loadReservations();
+  }catch(e){ alert("Network error — please try again."); }
+}
+async function checkInReservation(orderId){
+  const tableNumber = prompt("Which table is this guest being seated at?");
+  if(!tableNumber) return;
+  try{
+    const res = await fetch(`${API}/checkin`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ restaurant:slug, pin, order_id:orderId, table_number:tableNumber })
+    });
+    const data = await res.json();
+    if(!res.ok){ alert(data.error || "Couldn't check in this reservation."); return; }
+    alert(`Checked in — kitchen token ${data.token}`);
+    loadReservations();
+    loadOrders();
+  }catch(e){ alert("Network error — please try again."); }
+}
+
+/* ---------------- Menu availability ---------------- */
+async function loadMenu(){
+  const wrap = document.getElementById("menuList");
+  wrap.innerHTML = `<div class="card">Loading menu…</div>`;
+  try{
+    const res = await fetch(`${API}/menu?restaurant=${encodeURIComponent(slug)}`);
+    const data = await res.json();
+    const items = data.items || [];
+    wrap.innerHTML = "";
+    items.forEach(item=>{
+      const row = document.createElement("div");
+      row.className = "menu-row";
+      row.innerHTML = `
+        <div><div class="nm">${item.name}</div><div class="cat">${item.category} · ₹${item.price}</div></div>
+        <div class="switch ${item.is_available?'on':''}" id="sw-${item.id}" onclick="toggleItem('${item.id}', ${item.is_available})"></div>`;
+      wrap.appendChild(row);
+    });
+  }catch(e){
+    wrap.innerHTML = `<div class="card">Couldn't load the menu.</div>`;
+  }
+}
+async function toggleItem(itemId, currentlyAvailable){
+  const newVal = !currentlyAvailable;
+  const sw = document.getElementById("sw-"+itemId);
+  sw.classList.toggle("on", newVal);
+  sw.setAttribute("onclick", `toggleItem('${itemId}', ${newVal})`);
+  await fetch(`${API}/menu_toggle`, {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ restaurant:slug, pin, item_id:itemId, is_available:newVal })
+  });
+}
+
+/* ---------------- Analytics ---------------- */
+async function loadAnalytics(){
+  const grid = document.getElementById("statGrid");
+  const extra = document.getElementById("statExtra");
+  grid.innerHTML = `<div class="card">Loading…</div>`;
+  try{
+    const res = await fetch(`${API}/analytics?restaurant=${encodeURIComponent(slug)}&pin=${encodeURIComponent(pin)}`);
+    const d = await res.json();
+    grid.innerHTML = `
+      <div class="stat-card"><div class="stat-num">${d.total_orders}</div><div class="stat-lbl">Orders today</div></div>
+      <div class="stat-card"><div class="stat-num">₹${d.revenue}</div><div class="stat-lbl">Revenue today</div></div>
+      <div class="stat-card"><div class="stat-num">${d.live}</div><div class="stat-lbl">In progress</div></div>
+      <div class="stat-card"><div class="stat-num">${d.served}</div><div class="stat-lbl">Served</div></div>
+      <div class="stat-card"><div class="stat-num">${d.unverified_payments_now}</div><div class="stat-lbl">Unverified now</div></div>`;
+    extra.innerHTML = `
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span>Dine-in vs Takeaway</span><b>${d.dine_in} / ${d.takeaway}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span>Most popular dish</span><b>${d.popular_dish ? d.popular_dish.name+' ('+d.popular_dish.qty+')' : '—'}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span>Busiest hour</span><b>${d.busiest_hour || '—'}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span>Cancelled</span><b>${d.cancelled}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span>Upcoming reservations</span><b>${d.upcoming_reservations}</b></div>`;
+  }catch(e){
+    grid.innerHTML = `<div class="card">Couldn't load analytics.</div>`;
+  }
+}
+
+/* ---------------- Init ---------------- */
+(async function(){
+  if(!slug) return;
+  if(pin){
+    // Try the saved PIN silently before showing the login form.
+    const res = await fetch(`${API}/orders?restaurant=${encodeURIComponent(slug)}&pin=${encodeURIComponent(pin)}`);
+    if(res.ok){
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("app-screen").style.display = "block";
+      document.getElementById("appRestoName").textContent = slug;
+      startOrdersPoll();
+      loadMenu();
+    }
+  }
+})();
+</script>
+</body>
+</html>

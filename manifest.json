@@ -1,0 +1,12 @@
+{
+  "name": "Tejvix Food — Order & Track",
+  "short_name": "Tejvix Food",
+  "description": "Order dine-in or takeaway and track your order live — Muzaffarpur restaurants.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#FBF3E3",
+  "theme_color": "#1B3A2B",
+  "icons": [
+    { "src": "assets/logo-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

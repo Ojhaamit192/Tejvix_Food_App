@@ -3,161 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Tejvix — Order</title>
+<title>Tejvix Food — Order</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B3A2B">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
   :root{
-    --ink:#1B3A2B;
-    --ink-2:#12261C;
-    --gold:#E8A33D;
-    --gold-2:#C97F1F;
-    --paper:#FBF3E3;
-    --paper-2:#F3E6CB;
-    --char:#241F19;
-    --chili:#C1442E;
-    --sage:#A9C4A0;
-    --line: rgba(36,31,25,0.14);
-    --radius: 14px;
+    --ink:#1B3A2B; --ink-2:#12261C; --gold:#E8A33D; --gold-2:#C97F1F;
+    --paper:#FBF3E3; --paper-2:#F3E6CB; --char:#241F19; --chili:#C1442E;
+    --sage:#A9C4A0; --line: rgba(36,31,25,0.14); --radius:14px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  body{
-    background:var(--paper);
-    color:var(--char);
-    font-family:'Manrope',sans-serif;
-    -webkit-font-smoothing:antialiased;
-    min-height:100vh;
-  }
-  h1,h2,h3,.display{
-    font-family:'Fraunces',serif;
-    font-weight:700;
-    letter-spacing:-0.01em;
-    margin:0;
-  }
+  body{ background:var(--paper); color:var(--char); font-family:'Manrope',sans-serif; -webkit-font-smoothing:antialiased; min-height:100vh; }
+  h1,h2,h3,.display{ font-family:'Fraunces',serif; font-weight:700; letter-spacing:-0.01em; margin:0; }
   .screen{ display:none; min-height:100vh; padding-bottom:120px; }
   .screen.active{ display:block; }
 
-  /* ---------- Header ---------- */
-  .topbar{
-    background:var(--ink);
-    color:var(--paper);
-    padding:18px 20px 22px;
-    border-bottom:4px solid var(--gold);
-    position:relative;
-    overflow:hidden;
-  }
-  .topbar::after{
-    content:"";
-    position:absolute; right:-40px; top:-40px;
-    width:160px;height:160px;border-radius:50%;
-    background:radial-gradient(circle, rgba(232,163,61,0.25), transparent 70%);
-  }
+  .topbar{ background:var(--ink); color:var(--paper); padding:18px 20px 22px; border-bottom:4px solid var(--gold); position:relative; overflow:hidden; }
+  .topbar::after{ content:""; position:absolute; right:-40px; top:-40px; width:160px;height:160px;border-radius:50%; background:radial-gradient(circle, rgba(232,163,61,0.25), transparent 70%); }
   .brand-row{ display:flex; align-items:center; justify-content:space-between; gap:12px;}
   .brand{ display:flex; align-items:center; gap:10px; }
-  .brand-mark{
-    width:40px;height:40px;border-radius:10px;
-    background:var(--gold);
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Fraunces',serif; font-weight:900; color:var(--ink);
-    font-size:20px;
-  }
+  .brand-mark{ width:40px;height:40px;border-radius:10px; background:var(--gold); display:flex;align-items:center;justify-content:center; font-family:'Fraunces',serif; font-weight:900; color:var(--ink); font-size:20px; }
   .brand-name{ font-size:22px; }
   .brand-sub{ font-size:12px; opacity:0.75; margin-top:1px; }
-  .table-chip{
-    font-size:11px; background:rgba(255,255,255,0.1);
-    border:1px solid rgba(255,255,255,0.25);
-    padding:5px 10px; border-radius:100px; white-space:nowrap;
-  }
+  .table-chip{ font-size:11px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); padding:5px 10px; border-radius:100px; white-space:nowrap; }
+  .back-btn{ width:36px;height:36px;border-radius:9px; background:#fff; border:1px solid var(--line); display:flex;align-items:center;justify-content:center; cursor:pointer; flex:0 0 auto; }
 
-  /* ---------- Category tabs ---------- */
-  .tabs{
-    display:flex; gap:8px; overflow-x:auto; padding:14px 16px 4px;
-    scrollbar-width:none;
-  }
+  .tabs{ display:flex; gap:8px; overflow-x:auto; padding:14px 16px 4px; scrollbar-width:none; }
   .tabs::-webkit-scrollbar{ display:none; }
-  .tab{
-    flex:0 0 auto;
-    padding:8px 16px;
-    border-radius:100px;
-    background:var(--paper-2);
-    border:1px solid var(--line);
-    font-size:13px; font-weight:700;
-    cursor:pointer; white-space:nowrap;
-    color:var(--char);
-  }
+  .tab{ flex:0 0 auto; padding:8px 16px; border-radius:100px; background:var(--paper-2); border:1px solid var(--line); font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; color:var(--char); }
   .tab.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
 
-  /* ---------- Menu grid ---------- */
+  .veg-filter-row{ display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:0 16px 6px; max-width:760px; margin:0 auto; }
+  .veg-switch{ display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:700; cursor:pointer; user-select:none; }
+  .veg-switch .box{ width:34px; height:19px; border-radius:100px; background:var(--paper-2); border:1.5px solid #2E7D32; position:relative; transition:background .15s; }
+  .veg-switch .box::after{ content:""; position:absolute; top:1.5px; left:1.5px; width:14px; height:14px; border-radius:50%; background:#2E7D32; transition:left .15s; }
+  .veg-switch.on .box{ background:rgba(46,125,50,0.18); }
+  .veg-switch.on .box::after{ left:16.5px; }
+
   .menu-wrap{ padding:6px 16px 10px; max-width:760px; margin:0 auto; }
-  .section-label{
-    font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em;
-    color:var(--gold-2); margin:22px 2px 10px;
-  }
-  .item-card{
-    display:flex; gap:14px;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:12px; margin-bottom:12px;
-    align-items:center;
-  }
-  .item-icon{
-    width:64px;height:64px; flex:0 0 auto; border-radius:10px;
-    background:var(--paper-2); display:flex; align-items:center; justify-content:center;
-    overflow:hidden; cursor:pointer; transition:transform .14s ease;
-  }
-  .item-icon svg{ width:44px; height:44px; }
-  .item-icon img{ width:100%; height:100%; object-fit:cover; border-radius:10px; }
+  .section-label{ font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--gold-2); margin:22px 2px 10px; }
+  .item-card{ display:flex; gap:14px; background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:12px; margin-bottom:12px; align-items:center; }
+  .item-card.unavailable{ opacity:0.5; }
+  .item-icon{ width:56px;height:56px; flex:0 0 auto; border-radius:10px; background:var(--paper-2); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:800; font-size:20px; color:var(--gold-2); }
   .item-body{ flex:1; min-width:0; }
-  .item-top{ display:flex; align-items:center; gap:6px; }
+  .item-top{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
   .veg-dot{ width:13px;height:13px; border:1.5px solid #2E7D32; border-radius:3px; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
   .veg-dot::after{ content:""; width:6px;height:6px; border-radius:50%; background:#2E7D32; }
   .veg-dot.nonveg{ border-color:#B23A2E; }
   .veg-dot.nonveg::after{ background:#B23A2E; border-radius:0; clip-path:polygon(50% 0,0 100%,100% 100%); }
   .item-name{ font-weight:700; font-size:14.5px; }
-  .best-badge{
-    font-size:10px; font-weight:800; color:var(--chili);
-    background:rgba(193,68,46,0.1); padding:2px 7px; border-radius:5px; margin-left:auto;
-  }
+  .best-badge{ font-size:10px; font-weight:800; color:var(--chili); background:rgba(193,68,46,0.1); padding:2px 7px; border-radius:5px; }
+  .soldout-badge{ font-size:10px; font-weight:800; color:#8a806c; background:var(--paper-2); padding:2px 7px; border-radius:5px; }
   .item-price{ font-size:13.5px; color:#5b5347; margin-top:2px; font-weight:600; }
   .item-actions{ display:flex; align-items:center; gap:8px; margin-top:8px; }
-  .add-btn{
-    background:var(--ink); color:var(--paper); border:none; border-radius:8px;
-    padding:6px 14px; font-weight:700; font-size:13px; cursor:pointer;
-  }
-  .qty-stepper{
-    display:flex; align-items:center; gap:10px;
-    background:var(--ink); color:var(--paper); border-radius:8px; padding:4px 10px;
-  }
+  .add-btn{ background:var(--ink); color:var(--paper); border:none; border-radius:8px; padding:6px 14px; font-weight:700; font-size:13px; cursor:pointer; }
+  .qty-stepper{ display:flex; align-items:center; gap:10px; background:var(--ink); color:var(--paper); border-radius:8px; padding:4px 10px; }
   .qty-stepper button{ background:none; border:none; color:var(--paper); font-size:16px; font-weight:800; cursor:pointer; padding:0 2px; }
   .qty-stepper span{ font-weight:700; font-size:13px; min-width:14px; text-align:center; }
 
-  /* ---------- Floating cart bar ---------- */
-  .cart-bar{
-    position:fixed; left:16px; right:16px; bottom:16px;
-    max-width:728px; margin:0 auto;
-    background:var(--chili); color:#fff;
-    border-radius:12px; padding:13px 18px;
-    display:none; align-items:center; justify-content:space-between;
-    box-shadow:0 10px 30px rgba(0,0,0,0.25);
-    cursor:pointer; z-index:20;
-  }
+  .cart-bar{ position:fixed; left:16px; right:16px; bottom:16px; max-width:728px; margin:0 auto; background:var(--chili); color:#fff; border-radius:12px; padding:13px 18px; display:none; align-items:center; justify-content:space-between; box-shadow:0 10px 30px rgba(0,0,0,0.25); cursor:pointer; z-index:20; }
   .cart-bar.show{ display:flex; }
   .cart-bar .cnt{ font-size:13.5px; font-weight:700; }
   .cart-bar .go{ font-size:13.5px; font-weight:800; display:flex; align-items:center; gap:6px;}
 
-  /* ---------- Generic content page ---------- */
   .page{ max-width:640px; margin:0 auto; padding:18px 18px 130px; }
-  .page-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
-  .back-btn{
-    width:36px;height:36px;border-radius:9px; background:#fff; border:1px solid var(--line);
-    display:flex;align-items:center;justify-content:center; cursor:pointer; flex:0 0 auto;
-  }
-  .card{
-    background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-bottom:14px;
-  }
+  .card{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-bottom:14px; }
   .cart-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
   .cart-line:last-child{ border-bottom:none; }
   .cart-line .nm{ flex:1; font-weight:700; font-size:14px; }
@@ -166,71 +81,86 @@
   .totals-row.grand{ font-weight:800; font-size:16px; border-top:1px dashed var(--line); margin-top:6px; padding-top:12px; }
 
   label.field-label{ font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:#7a7261; display:block; margin:14px 0 6px; }
-  input[type=text], input[type=tel]{
-    width:100%; padding:12px 13px; border-radius:10px; border:1.5px solid var(--line);
-    font-family:'Manrope',sans-serif; font-size:15px; background:#fff;
-  }
-  input:focus{ outline:2px solid var(--gold); outline-offset:1px; }
+  input[type=text], input[type=tel], textarea{ width:100%; padding:12px 13px; border-radius:10px; border:1.5px solid var(--line); font-family:'Manrope',sans-serif; font-size:15px; background:#fff; }
+  input:focus, textarea:focus{ outline:2px solid var(--gold); outline-offset:1px; }
   .toggle-row{ display:flex; gap:10px; margin-top:6px; }
-  .toggle-opt{
-    flex:1; text-align:center; padding:12px; border-radius:10px; border:1.5px solid var(--line);
-    font-weight:700; font-size:14px; cursor:pointer; background:#fff;
-  }
+  .toggle-opt{ flex:1; text-align:center; padding:12px; border-radius:10px; border:1.5px solid var(--line); font-weight:700; font-size:14px; cursor:pointer; background:#fff; }
   .toggle-opt.selected{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
 
-  .primary-btn{
-    width:100%; background:var(--chili); color:#fff; border:none; border-radius:12px;
-    padding:15px; font-size:15.5px; font-weight:800; cursor:pointer; font-family:'Manrope',sans-serif;
-  }
+  .primary-btn{ width:100%; background:var(--chili); color:#fff; border:none; border-radius:12px; padding:15px; font-size:15.5px; font-weight:800; cursor:pointer; font-family:'Manrope',sans-serif; }
   .primary-btn:disabled{ opacity:0.45; cursor:not-allowed; }
-  .secondary-btn{
-    width:100%; background:#fff; color:var(--ink); border:1.5px solid var(--ink); border-radius:12px;
-    padding:14px; font-size:14.5px; font-weight:800; cursor:pointer; margin-top:10px;
-  }
+  .secondary-btn{ width:100%; background:#fff; color:var(--ink); border:1.5px solid var(--ink); border-radius:12px; padding:14px; font-size:14.5px; font-weight:800; cursor:pointer; margin-top:10px; }
   .hint{ font-size:12px; color:#8a806c; margin-top:6px; }
+  .error-text{ font-size:12.5px; color:var(--chili); font-weight:700; margin-top:6px; display:none; }
 
-  /* ---------- Ticket / confirmation ---------- */
-  .ticket{
-    background:#fff; border-radius:16px; border:1px solid var(--line);
-    text-align:center; padding:28px 22px; position:relative;
-    background-image: radial-gradient(circle at 0 50%, var(--paper) 9px, transparent 10px),
-                       radial-gradient(circle at 100% 50%, var(--paper) 9px, transparent 10px);
-    background-repeat:no-repeat; background-position: left center, right center;
-  }
+  .ticket{ background:#fff; border-radius:16px; border:1px solid var(--line); text-align:center; padding:28px 22px; position:relative;
+    background-image: radial-gradient(circle at 0 50%, var(--paper) 9px, transparent 10px), radial-gradient(circle at 100% 50%, var(--paper) 9px, transparent 10px);
+    background-repeat:no-repeat; background-position: left center, right center; }
   .ticket .kicker{ font-size:12px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; color:var(--gold-2); }
-  .token-num{ font-family:'Fraunces',serif; font-size:64px; font-weight:900; color:var(--chili); margin:6px 0; line-height:1; }
+  .token-num{ font-family:'Fraunces',serif; font-size:56px; font-weight:900; color:var(--chili); margin:6px 0; line-height:1; }
   .ticket-divider{ border-top:2px dashed var(--line); margin:18px 0; }
   .ticket-row{ display:flex; justify-content:space-between; font-size:13.5px; padding:5px 0; text-align:left; }
   .ticket-row .k{ color:#8a806c; }
   .ticket-row .v{ font-weight:700; }
 
-  .status-pill{
-    display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700;
-    background:rgba(46,125,50,0.1); color:#2E7D32; padding:6px 12px; border-radius:100px; margin-bottom:14px;
-  }
+  .status-pill{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; background:rgba(46,125,50,0.1); color:#2E7D32; padding:6px 12px; border-radius:100px; margin-bottom:14px; }
   .status-pill.pending{ background:rgba(232,163,61,0.18); color:var(--gold-2); }
 
+  .stepper-track{ display:flex; justify-content:space-between; margin:8px 0 4px; }
+  .step{ flex:1; text-align:center; position:relative; }
+  .step .dot{ width:26px; height:26px; border-radius:50%; background:var(--paper-2); border:2px solid var(--line); margin:0 auto 6px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#8a806c; }
+  .step .lbl{ font-size:10.5px; font-weight:700; color:#8a806c; }
+  .step.done .dot{ background:#2E7D32; border-color:#2E7D32; color:#fff; }
+  .step.done .lbl{ color:#2E7D32; }
+  .step.current .dot{ background:var(--gold); border-color:var(--gold); color:var(--ink); }
+  .step.current .lbl{ color:var(--gold-2); }
+  .step:not(:last-child)::after{ content:""; position:absolute; top:13px; left:60%; width:80%; height:2px; background:var(--line); z-index:-1; }
+  .step.done:not(:last-child)::after{ background:#2E7D32; }
+
+  .stars{ display:flex; gap:8px; justify-content:center; margin:14px 0; }
+  .stars span{ font-size:34px; cursor:pointer; color:var(--line); }
+  .stars span.on{ color:var(--gold); }
+
   .empty{ text-align:center; padding:60px 20px; color:#8a806c; }
+  .rest-card{ display:flex; gap:14px; background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin-bottom:12px; cursor:pointer; align-items:center; }
+  .rest-mark{ width:54px;height:54px;border-radius:12px; background:var(--paper-2); display:flex;align-items:center;justify-content:center; font-family:'Fraunces',serif; font-weight:900; color:var(--gold-2); font-size:22px; flex:0 0 auto; }
+  .rest-name{ font-weight:800; font-size:16px; }
+  .rest-meta{ font-size:12.5px; color:#8a806c; margin-top:3px; }
+  .rest-rating{ font-size:12px; font-weight:700; color:var(--gold-2); margin-top:4px; }
 
-  /* ---------- Admin ---------- */
-  .admin-trigger{ position:fixed; bottom:6px; right:6px; width:34px; height:34px; opacity:0; z-index:5; }
-  #qrbox{ display:flex; justify-content:center; padding:14px; background:#fff; border-radius:12px; margin-top:10px; }
+  .spinner-msg{ text-align:center; padding:60px 20px; color:#8a806c; font-size:14px; }
 
-  @media (max-width:380px){
-    .token-num{ font-size:52px; }
-  }
+  @media (max-width:380px){ .token-num{ font-size:48px; } }
 </style>
 </head>
 <body>
 
-<!-- ============ MENU SCREEN ============ -->
-<div class="screen active" id="screen-menu">
+<!-- ============ DIRECTORY SCREEN ============ -->
+<div class="screen" id="screen-directory">
   <div class="topbar">
     <div class="brand-row">
       <div class="brand">
         <div class="brand-mark">T</div>
         <div>
-          <div class="brand-name">Tejvix</div>
+          <div class="brand-name">Tejvix Food</div>
+          <div class="brand-sub">Muzaffarpur ke restaurants — order &amp; track</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page" id="directoryWrap" style="padding-top:18px;">
+    <div class="spinner-msg">Loading restaurants…</div>
+  </div>
+</div>
+
+<!-- ============ MENU SCREEN ============ -->
+<div class="screen" id="screen-menu">
+  <div class="topbar">
+    <div class="brand-row">
+      <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+        <div class="back-btn" id="menuBackBtn" style="background:rgba(255,255,255,0.12);border-color:transparent;color:#fff;">←</div>
+        <div style="min-width:0;">
+          <div class="brand-name" id="restoName" style="font-size:19px;">Restaurant</div>
           <div class="brand-sub" id="restoNameSub">Scan. Order. Enjoy.</div>
         </div>
       </div>
@@ -238,6 +168,10 @@
     </div>
   </div>
   <div class="tabs" id="tabs"></div>
+  <div class="veg-filter-row" style="justify-content:space-between;">
+    <span class="hint" style="cursor:pointer;text-decoration:underline;font-weight:700;" onclick="openReservationFlow()">📅 Reserve a table for later</span>
+    <div class="veg-switch" id="vegSwitch" onclick="toggleVegOnly()"><span class="box"></span><span>Veg only</span></div>
+  </div>
   <div class="menu-wrap" id="menuWrap"></div>
   <div style="text-align:center;padding:10px 16px 100px;">
     <span class="hint" style="cursor:pointer;text-decoration:underline;" onclick="goTo('legal')">Terms & Conditions · Privacy Policy</span>
@@ -254,14 +188,14 @@
     <div class="brand-row">
       <div style="display:flex;align-items:center;gap:12px;">
         <div class="back-btn" onclick="goTo('menu')" style="background:rgba(255,255,255,0.12);border-color:transparent;color:#fff;">←</div>
-        <div class="brand-name" style="font-size:19px;">Your order</div>
+        <div class="brand-name" style="font-size:19px;" id="cartHeading">Your order</div>
       </div>
     </div>
   </div>
   <div class="page">
     <div class="card" id="cartLines"></div>
 
-    <div class="card">
+    <div class="card" id="totalsCard">
       <div class="totals-row"><span>Item total</span><span id="sumSubtotal">₹0</span></div>
       <div class="totals-row"><span>Taxes &amp; charges (5%)</span><span id="sumTax">₹0</span></div>
       <div class="totals-row grand"><span>To pay</span><span id="sumTotal">₹0</span></div>
@@ -272,15 +206,56 @@
       <input type="text" id="custName" placeholder="e.g. Ravi Kumar">
       <label class="field-label">Phone number</label>
       <input type="tel" id="custPhone" placeholder="10-digit mobile number" maxlength="10">
+
       <label class="field-label">Order type</label>
       <div class="toggle-row">
         <div class="toggle-opt selected" id="opt-dinein" onclick="setOrderType('dinein')">🍽 Dine-in</div>
         <div class="toggle-opt" id="opt-takeaway" onclick="setOrderType('takeaway')">🥡 Takeaway</div>
       </div>
-      <div class="hint">A token number is generated automatically when you place the order.</div>
+
+      <div id="dineinWhenWrap">
+        <label class="field-label">When</label>
+        <div class="toggle-row">
+          <div class="toggle-opt selected" id="opt-now" onclick="setBookingType('now')">Now — I'm at the table</div>
+          <div class="toggle-opt" id="opt-advance" onclick="setBookingType('advance')">📅 Reserve for later</div>
+        </div>
+      </div>
+
+      <div id="tableNumberWrap">
+        <label class="field-label">Table number</label>
+        <input type="text" id="tableNumber" placeholder="e.g. 6">
+      </div>
+
+      <div id="reservationWrap" style="display:none;">
+        <label class="field-label">Date (up to 7 days ahead)</label>
+        <div class="tabs" id="dateChips" style="padding:2px 0 4px;overflow-x:auto;"></div>
+
+        <label class="field-label">Meal</label>
+        <div class="toggle-row">
+          <div class="toggle-opt selected" id="opt-lunch" onclick="setMealPeriod('lunch')">☀️ Lunch</div>
+          <div class="toggle-opt" id="opt-dinner" onclick="setMealPeriod('dinner')">🌙 Dinner</div>
+        </div>
+
+        <label class="field-label">Time slot</label>
+        <div class="tabs" id="timeSlotChips" style="padding:2px 0 4px;overflow-x:auto;"></div>
+
+        <label class="field-label">Guests (family &amp; friends)</label>
+        <div class="qty-stepper" style="background:#fff;border:1.5px solid var(--line);color:var(--char);width:fit-content;padding:6px 14px;">
+          <button onclick="changeGuests(-1)" style="color:var(--char);">−</button>
+          <span id="guestsCount">2</span>
+          <button onclick="changeGuests(1)" style="color:var(--char);">+</button>
+        </div>
+        <div class="hint" id="reservationHint">Add dishes from the menu to pre-order, or leave the cart empty and order when you arrive — either way a small amount is charged now to confirm your table.</div>
+      </div>
+
+      <label class="field-label">Any instructions (optional)</label>
+      <textarea id="custNotes" rows="2" placeholder="e.g. less spicy, extra chutney"></textarea>
+
+      <div class="error-text" id="cartError"></div>
+      <div class="hint" id="paymentNote">Payment is collected now via UPI to confirm your order — the kitchen sees it the moment it's paid.</div>
     </div>
 
-    <button class="primary-btn" id="placeOrderBtn" onclick="placeOrder()">Proceed to pay</button>
+    <button class="primary-btn" id="placeOrderBtn" onclick="goToPayment()">Proceed to pay</button>
   </div>
 </div>
 
@@ -296,45 +271,95 @@
   </div>
   <div class="page">
     <div class="card" style="text-align:center;">
-      <div class="hint" style="margin-bottom:6px;">Token</div>
-      <div style="font-family:'Fraunces',serif;font-weight:900;font-size:38px;color:var(--chili);" id="payToken">—</div>
-      <div class="hint">Amount to pay</div>
-      <div style="font-family:'Fraunces',serif;font-weight:800;font-size:30px;" id="payAmount">₹0</div>
+      <div class="hint" id="payKicker" style="margin-bottom:6px;">Amount to pay</div>
+      <div style="font-family:'Fraunces',serif;font-weight:800;font-size:32px;" id="payAmount">₹0</div>
+      <div class="hint" id="payDepositNote" style="display:none;margin-top:6px;">This confirms your table reservation. Order food anytime after you arrive.</div>
     </div>
-    <div class="card" style="text-align:center;">
+    <div class="card" style="text-align:center;" id="upiCard">
       <div class="hint" style="margin-bottom:8px;">Scan to pay</div>
       <div id="upiQrBox" style="display:flex;justify-content:center;"></div>
       <div class="hint" style="margin-top:10px;">Scan this QR code using any UPI app (PhonePe, GPay, Paytm, etc.) to pay.</div>
+      <label class="field-label" style="text-align:left;">UPI reference number (UTR)</label>
+      <input type="text" id="utrInput" placeholder="e.g. 402615493827" maxlength="20" style="text-align:center;letter-spacing:1px;">
+      <div class="hint" style="text-align:left;">After paying, open your UPI app's transaction details — the reference/UTR number is shown there. Restaurant staff will match it against their own payment notification before your order starts.</div>
     </div>
-    <div class="hint" id="payWaitMsg" style="text-align:center;margin-top:10px;">Please scan the QR code and complete the payment in your UPI app. The confirm button will appear here shortly…</div>
-    <button class="primary-btn" id="confirmPayBtn" style="display:none;" onclick="confirmPayment()">I've completed the payment</button>
+    <div class="card" style="text-align:center;display:none;" id="counterCard">
+      <div class="hint">This restaurant hasn't set up UPI yet — please tap below to confirm, and pay in cash at the counter.</div>
+    </div>
+    <div class="error-text" id="payError"></div>
+    <button class="primary-btn" id="payConfirmBtn" onclick="submitOrder()">I've completed the payment</button>
+    <div class="hint" style="text-align:center;margin-top:10px;">Your order reaches the kitchen right away, marked "unverified" until staff match your UTR — they'll start preparing once confirmed.</div>
   </div>
 </div>
 
-<!-- ============ CONFIRMATION SCREEN ============ -->
+<!-- ============ CONFIRMATION / TRACKING SCREEN ============ -->
 <div class="screen" id="screen-confirm">
   <div class="topbar" style="padding:16px 20px;">
-    <div class="brand-name" style="font-size:19px;">Order confirmed</div>
+    <div class="brand-name" style="font-size:19px;">Your order</div>
   </div>
   <div class="page">
-    <span class="status-pill">● Payment received — order confirmed</span>
+    <span class="status-pill pending" id="statusPill">● Order received</span>
+    <div class="card" id="unverifiedBanner" style="display:none;background:rgba(232,163,61,0.15);border-color:var(--gold);text-align:center;">
+      <div style="font-weight:800;font-size:13.5px;color:var(--gold-2);">⏳ Waiting for the restaurant to confirm your payment</div>
+      <div class="hint" style="margin-top:4px;">This usually takes a minute. If it isn't confirmed in time, your order will auto-cancel — please pay and try again.</div>
+    </div>
     <div class="ticket">
-      <div class="kicker">Tejvix token</div>
-      <div class="token-num" id="confToken">TJ-000</div>
+      <div class="kicker" id="confRestoName">Restaurant</div>
+      <div class="token-num" id="confToken">#0</div>
       <div id="confSub" style="font-size:13px;color:#8a806c;">Show this token at the counter</div>
+
+      <div class="stepper-track" id="stepperTrack" style="margin-top:20px;">
+        <div class="step" id="step-received"><div class="dot">1</div><div class="lbl">Received</div></div>
+        <div class="step" id="step-preparing"><div class="dot">2</div><div class="lbl">Preparing</div></div>
+        <div class="step" id="step-ready"><div class="dot">3</div><div class="lbl">Ready</div></div>
+        <div class="step" id="step-served"><div class="dot">4</div><div class="lbl">Served</div></div>
+      </div>
+
       <div class="ticket-divider"></div>
       <div class="ticket-row"><span class="k">Name</span><span class="v" id="confName">—</span></div>
       <div class="ticket-row"><span class="k">Type</span><span class="v" id="confType">—</span></div>
+      <div class="ticket-row" id="confWhenRow" style="display:none;"><span class="k">When</span><span class="v" id="confWhen">—</span></div>
+      <div class="ticket-row" id="confGuestsRow" style="display:none;"><span class="k">Guests</span><span class="v" id="confGuests">—</span></div>
       <div class="ticket-row"><span class="k">Items</span><span class="v" id="confItems">—</span></div>
-      <div class="ticket-row"><span class="k">Amount paid</span><span class="v" id="confAmount">—</span></div>
+      <div class="ticket-row"><span class="k">Amount</span><span class="v" id="confAmount">—</span></div>
+      <div class="ticket-row"><span class="k">Payment</span><span class="v" id="confPayment">Paid via UPI</span></div>
     </div>
-    <button class="primary-btn" style="background:#25D366;margin-top:16px;" onclick="openWhatsApp()">Confirm order on WhatsApp</button>
-    <div class="hint" style="text-align:center;font-weight:700;color:var(--chili);margin-top:10px;">Please show your payment confirmation on counter while visiting.</div>
-    <div class="hint" style="text-align:center;">Your order has already been placed — this order can no longer be cancelled.</div>
+
+    <button class="primary-btn" style="background:#25D366;margin-top:16px;" onclick="openWhatsApp()">Send order to WhatsApp</button>
+    <div class="hint" style="text-align:center;">Once placed, this order can no longer be cancelled — please check your cart before placing.</div>
+
+    <div class="card" id="reviewCard" style="display:none;text-align:center;margin-top:16px;">
+      <h3 style="margin-bottom:6px;">How was your visit?</h3>
+      <div class="hint">Your order has been served — rate your experience.</div>
+      <div class="stars" id="starsRow">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+      <textarea id="reviewComment" rows="2" placeholder="Anything you'd like to tell the restaurant? (optional)"></textarea>
+      <button class="primary-btn" style="margin-top:10px;" onclick="submitReview()">Submit rating</button>
+      <div class="hint" id="reviewThanks" style="display:none;font-weight:700;color:#2E7D32;">Thanks for your feedback!</div>
+    </div>
 
     <button class="secondary-btn" onclick="startNewOrder()">Start a new order</button>
     <div style="text-align:center;margin-top:16px;">
       <span class="hint" style="cursor:pointer;text-decoration:underline;" onclick="goTo('legal')">Terms & Conditions · Privacy Policy</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ STANDALONE REVIEW SCREEN (deep link) ============ -->
+<div class="screen" id="screen-reviewonly">
+  <div class="topbar" style="padding:16px 20px;">
+    <div class="brand-name" style="font-size:19px;">Rate your visit</div>
+  </div>
+  <div class="page">
+    <div class="card" style="text-align:center;">
+      <h3>How was your food?</h3>
+      <div class="stars" id="starsRowStandalone">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+      <textarea id="reviewCommentStandalone" rows="2" placeholder="Anything you'd like to tell the restaurant? (optional)"></textarea>
+      <button class="primary-btn" style="margin-top:10px;" onclick="submitReviewStandalone()">Submit rating</button>
+      <div class="hint" id="reviewThanksStandalone" style="display:none;font-weight:700;color:#2E7D32;">Thanks for your feedback!</div>
     </div>
   </div>
 </div>
@@ -344,7 +369,7 @@
   <div class="topbar" style="padding:16px 20px;">
     <div class="brand-row">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div class="back-btn" onclick="goTo('menu')" style="background:rgba(255,255,255,0.12);border-color:transparent;color:#fff;">←</div>
+        <div class="back-btn" onclick="goTo(restaurantSlug ? 'menu' : 'directory')" style="background:rgba(255,255,255,0.12);border-color:transparent;color:#fff;">←</div>
         <div class="brand-name" style="font-size:19px;">Terms & Privacy</div>
       </div>
     </div>
@@ -353,118 +378,149 @@
     <div class="card">
       <h3 style="margin-bottom:10px;">Terms & Conditions</h3>
       <p style="font-size:13.5px;line-height:1.6;color:#4a4438;">
-        This app is provided only as a platform for browsing the menu and booking/placing food orders with the restaurant.
-        The responsibility for food quality, hygiene, preparation, and any related matter rests solely with the restaurant preparing and serving the food.
-        Once an order is placed and payment is completed, the order cannot be cancelled or refunded through this app.
-        Menu items, prices, and availability are subject to change without prior notice.
-        Please retain your payment confirmation and show it at the counter while collecting your order.
+        This app is a platform for browsing restaurant menus, placing dine-in or takeaway orders, and reserving a table up to 7 days in advance. It does not offer home delivery.
+        Payment is collected before an order reaches the kitchen or a table reservation is confirmed. Responsibility for food quality, hygiene, preparation, and pricing rests solely with the restaurant preparing and serving the food.
+        Once an order is placed or a reservation is confirmed it cannot be cancelled or refunded through this app — please contact the restaurant directly for any changes.
+        Menu items, prices, and availability are subject to change without prior notice, and an item may be marked out of stock by the restaurant at any time.
+        Please retain your order token and show it at the counter while collecting or being served your order, or quote your name for a table reservation.
       </p>
     </div>
     <div class="card">
       <h3 style="margin-bottom:10px;">Privacy Policy</h3>
       <p style="font-size:13.5px;line-height:1.6;color:#4a4438;">
-        We do not collect or store any personal data beyond what you provide to place your order (your name and phone number),
-        which is used only to confirm and prepare your order and to record it for the restaurant's own record-keeping.
+        We collect only what you provide to place your order — your name and phone number — which is used to confirm and prepare your order and for the restaurant's own record-keeping.
         No data collected through this app is sold, rented, or shared with any third party.
         This app does not use tracking cookies or third-party advertising.
       </p>
     </div>
     <div class="card" style="text-align:center;">
-      <p style="font-size:12.5px;color:#8a806c;margin:0;">© Tejvix. All rights reserved.</p>
+      <p style="font-size:12.5px;color:#8a806c;margin:0;">© Tejvix Food. All rights reserved.</p>
     </div>
   </div>
 </div>
-
-<!-- ============ ADMIN SCREEN ============ -->
-<div class="screen" id="screen-admin">
-  <div class="topbar" style="padding:16px 20px;">
-    <div class="brand-row">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div class="back-btn" onclick="goTo('menu')" style="background:rgba(255,255,255,0.12);border-color:transparent;color:#fff;">←</div>
-        <div class="brand-name" style="font-size:19px;">Tejvix setup</div>
-      </div>
-    </div>
-  </div>
-  <div class="page">
-    <div class="card">
-      <label class="field-label">Restaurant / shop name</label>
-      <input type="text" id="cfgName">
-      <label class="field-label">WhatsApp number (with country code, no + or spaces — e.g. 91XXXXXXXXXX)</label>
-      <input type="text" id="cfgWhatsapp">
-      <label class="field-label">UPI ID (for payments — e.g. name@okhdfcbank)</label>
-      <input type="text" id="cfgUpi">
-      <label class="field-label">Google Sheet webhook URL (optional — from Apps Script)</label>
-      <input type="text" id="cfgSheet">
-      <button class="primary-btn" style="margin-top:14px;" onclick="saveConfig()">Save settings</button>
-    </div>
-    <div class="card">
-      <div class="field-label" style="margin-top:0;">QR code for this menu</div>
-      <div id="qrbox"></div>
-      <div class="hint" style="text-align:center;">Print this and stick it on tables — scanning it opens this page directly.</div>
-    </div>
-  </div>
-</div>
-
-<div class="admin-trigger" onclick="goTo('admin')" title="setup"></div>
 
 <script>
-/* ---------------- Menu data ---------------- */
-const MENU = [
-  {id:1, name:"Veg Biryani", cat:"Biryani", price:180, veg:true, best:true, icon:"biryani", photo:"biryani"},
-  {id:2, name:"Chicken Biryani", cat:"Biryani", price:220, veg:false, best:true, icon:"biryani", photo:"biryani"},
-  {id:3, name:"Paneer Tikka", cat:"Starters", price:190, veg:true, best:false, icon:"tikka"},
-  {id:4, name:"Chicken Tikka", cat:"Starters", price:230, veg:false, best:false, icon:"tikka"},
-  {id:5, name:"Margherita Pizza", cat:"Fast Food", price:199, veg:true, best:true, icon:"pizza", photo:"pizza"},
-  {id:6, name:"Farmhouse Pizza", cat:"Fast Food", price:249, veg:true, best:false, icon:"pizza", photo:"pizza"},
-  {id:7, name:"Veg Burger", cat:"Fast Food", price:99, veg:true, best:false, icon:"burger", photo:"burger"},
-  {id:8, name:"Chicken Burger", cat:"Fast Food", price:149, veg:false, best:false, icon:"burger", photo:"burger"},
-  {id:9, name:"Butter Naan", cat:"Breads", price:40, veg:true, best:false, icon:"bread"},
-  {id:10, name:"Plain Naan", cat:"Breads", price:30, veg:true, best:false, icon:"bread"},
-  {id:11, name:"Garlic Naan", cat:"Breads", price:50, veg:true, best:false, icon:"bread"},
-  {id:12, name:"Dal Makhani", cat:"Mains", price:160, veg:true, best:false, icon:"curry"},
-  {id:13, name:"Butter Chicken", cat:"Mains", price:260, veg:false, best:true, icon:"curry", photo:"butter-chicken"},
-  {id:14, name:"Chocolate Cake Slice", cat:"Desserts", price:90, veg:true, best:false, icon:"cake", photo:"dessert"},
-  {id:15, name:"Gulab Jamun (2 pc)", cat:"Desserts", price:60, veg:true, best:false, icon:"sweet", photo:"dessert"},
-  {id:16, name:"Masala Chaas", cat:"Beverages", price:40, veg:true, best:false, icon:"drink"},
-  {id:17, name:"Cold Coffee", cat:"Beverages", price:80, veg:true, best:false, icon:"drink"},
-  {id:18, name:"Test Order (₹1)", cat:"Test", price:1, veg:true, best:false, icon:"test"},
-];
-const CATEGORIES = ["Bestsellers","Test","Biryani","Starters","Mains","Fast Food","Breads","Desserts","Beverages"];
+const API = "/api";
 
-const ICONS = {
-  biryani: `<svg viewBox="0 0 64 64"><circle cx="32" cy="38" r="20" fill="#E8A33D"/><path d="M14 36c0-10 8-18 18-18s18 8 18 18" fill="none" stroke="#C97F1F" stroke-width="3"/><circle cx="24" cy="30" r="2" fill="#C1442E"/><circle cx="34" cy="26" r="2" fill="#2E7D32"/><circle cx="40" cy="34" r="2" fill="#C1442E"/><circle cx="28" cy="40" r="2" fill="#2E7D32"/></svg>`,
-  tikka: `<svg viewBox="0 0 64 64"><rect x="8" y="30" width="48" height="4" rx="2" fill="#8a5a2b"/><rect x="16" y="22" width="9" height="9" rx="2" fill="#C1442E"/><rect x="28" y="22" width="9" height="9" rx="2" fill="#E8A33D"/><rect x="40" y="22" width="9" height="9" rx="2" fill="#C1442E"/></svg>`,
-  pizza: `<svg viewBox="0 0 64 64"><path d="M32 8 58 54 6 54Z" fill="#E8A33D"/><path d="M32 8 58 54 6 54Z" fill="none" stroke="#C97F1F" stroke-width="2"/><circle cx="32" cy="30" r="3" fill="#C1442E"/><circle cx="24" cy="40" r="3" fill="#C1442E"/><circle cx="40" cy="40" r="3" fill="#2E7D32"/></svg>`,
-  burger: `<svg viewBox="0 0 64 64"><path d="M10 26c0-8 10-14 22-14s22 6 22 14Z" fill="#E8A33D"/><rect x="9" y="28" width="46" height="6" rx="3" fill="#2E7D32"/><rect x="9" y="36" width="46" height="7" rx="2" fill="#8a5a2b"/><rect x="9" y="45" width="46" height="8" rx="4" fill="#E8A33D"/></svg>`,
-  bread: `<svg viewBox="0 0 64 64"><path d="M12 40c-4-14 8-28 20-28s24 14 20 28c-4 10-40 10-40 0Z" fill="#E8C98F"/><path d="M20 30c4 4 8 4 12 0M28 34c4 4 8 4 12 0" fill="none" stroke="#C97F1F" stroke-width="2"/></svg>`,
-  curry: `<svg viewBox="0 0 64 64"><ellipse cx="32" cy="40" rx="22" ry="12" fill="#C1442E"/><path d="M12 40a20 8 0 0 0 40 0" fill="#e08a68"/><path d="M20 22c0 4 3 4 3 8M32 20c0 4 3 4 3 8M44 22c0 4 3 4 3 8" stroke="#C97F1F" stroke-width="2" fill="none"/></svg>`,
-  cake: `<svg viewBox="0 0 64 64"><rect x="14" y="34" width="36" height="18" rx="3" fill="#8a5a2b"/><rect x="14" y="28" width="36" height="8" fill="#E8C98F"/><rect x="30" y="14" width="4" height="12" fill="#C1442E"/><circle cx="32" cy="12" r="3" fill="#E8A33D"/></svg>`,
-  sweet: `<svg viewBox="0 0 64 64"><circle cx="24" cy="34" r="12" fill="#E8A33D"/><circle cx="40" cy="34" r="12" fill="#C97F1F"/></svg>`,
-  drink: `<svg viewBox="0 0 64 64"><path d="M18 14h28l-4 38a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4Z" fill="#A9C4A0"/><rect x="16" y="10" width="32" height="6" rx="2" fill="#1B3A2B"/></svg>`,
-  test: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="#A9C4A0"/><path d="M20 33l8 8 16-18" fill="none" stroke="#1B3A2B" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-};
+/* ---------------- URL state ---------------- */
+const urlParams = new URLSearchParams(window.location.search);
+let restaurantSlug = urlParams.get("restaurant") || "";
+const preTable = urlParams.get("table") || "";
+const reviewOrderId = urlParams.get("review") || "";
 
-/* ---------------- State ---------------- */
-let cart = {};      // id -> qty
+/* ---------------- Reservation time slots ---------------- */
+const LUNCH_SLOTS = ["12:00 PM","12:30 PM","1:00 PM","1:30 PM","2:00 PM","2:30 PM","3:00 PM"];
+const DINNER_SLOTS = ["7:00 PM","7:30 PM","8:00 PM","8:30 PM","9:00 PM","9:30 PM","10:00 PM","10:30 PM"];
+const MAX_ADVANCE_DAYS = 7;
+
+/* ---------------- App state ---------------- */
+let restaurantInfo = null;
+let MENU = [];
+let CATEGORIES = [];
+let cart = {};
 let orderType = "dinein";
-let currentOrder = null;
-
-const cfg = JSON.parse(localStorage.getItem("tejvix_cfg") || "{}");
-cfg.name = cfg.name || "Tejvix";
-cfg.whatsapp = cfg.whatsapp || "917367814387";  // Tejvix Digital Solutions WhatsApp business number
-cfg.upi = cfg.upi || "aojha641-1@okicici";     // default UPI ID — change in setup screen anytime
-cfg.sheet = cfg.sheet || "";                     // Apps Script web app URL
+let bookingType = "now"; // "now" | "advance"
+let mealPeriod = "lunch";
+let selectedDateOffset = 0; // days from today, 0..MAX_ADVANCE_DAYS
+let selectedSlot = LUNCH_SLOTS[0];
+let guests = 2;
+let vegOnly = false;
+let pendingOrder = null;   // built client-side, sent to /api/order only after payment
+let currentOrder = null;   // the server's response after the order is actually placed
+let trackPoll = null;
+let lastKnownStatus = null;
 
 /* ---------------- Navigation ---------------- */
 function goTo(name){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById("screen-"+name).classList.add("active");
   window.scrollTo(0,0);
-  if(name==="admin") loadConfigForm();
   if(name==="cart") renderCart();
 }
 
-/* ---------------- Menu rendering ---------------- */
+/* ---------------- Init ---------------- */
+async function init(){
+  if(reviewOrderId){
+    goTo("reviewonly");
+    wireStars("starsRowStandalone");
+    return;
+  }
+  if(restaurantSlug){
+    await loadRestaurant();
+    goTo("menu");
+  } else {
+    await loadDirectory();
+    goTo("directory");
+  }
+}
+
+/* ---------------- Directory ---------------- */
+async function loadDirectory(){
+  const wrap = document.getElementById("directoryWrap");
+  try{
+    const res = await fetch(`${API}/restaurants`);
+    const data = await res.json();
+    const list = data.restaurants || [];
+    if(!list.length){
+      wrap.innerHTML = `<div class="empty">No restaurants are live yet. Please check back soon.</div>`;
+      return;
+    }
+    wrap.innerHTML = "";
+    for(const r of list){
+      const card = document.createElement("div");
+      card.className = "rest-card";
+      card.onclick = ()=>{ window.location.search = `?restaurant=${encodeURIComponent(r.slug)}`; };
+      card.innerHTML = `
+        <div class="rest-mark">${(r.name||"?").charAt(0)}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="rest-name">${r.name}</div>
+          <div class="rest-meta">${r.address||""}</div>
+          <div class="rest-rating" id="rating-${r.slug}">Dine-in &amp; Takeaway</div>
+        </div>
+        <div style="font-size:20px;color:#8a806c;">›</div>`;
+      wrap.appendChild(card);
+      loadRatingBadge(r.slug);
+    }
+  }catch(e){
+    wrap.innerHTML = `<div class="empty">Couldn't load restaurants. Please check your connection and reload.</div>`;
+  }
+}
+async function loadRatingBadge(slug){
+  try{
+    const res = await fetch(`${API}/reviews?restaurant=${encodeURIComponent(slug)}`);
+    const data = await res.json();
+    const el = document.getElementById("rating-"+slug);
+    if(el && data.average) el.textContent = `★ ${data.average} (${data.count} rating${data.count>1?'s':''}) · Dine-in & Takeaway`;
+  }catch(e){ /* rating badge is a nice-to-have, fail silently */ }
+}
+
+/* ---------------- Restaurant menu ---------------- */
+async function loadRestaurant(){
+  const wrap = document.getElementById("menuWrap");
+  wrap.innerHTML = `<div class="spinner-msg">Loading menu…</div>`;
+  try{
+    const res = await fetch(`${API}/menu?restaurant=${encodeURIComponent(restaurantSlug)}`);
+    if(!res.ok){ wrap.innerHTML = `<div class="empty">Restaurant not found.</div>`; return; }
+    const data = await res.json();
+    restaurantInfo = data.restaurant;
+    MENU = data.items || [];
+    CATEGORIES = ["Bestsellers", ...Array.from(new Set(MENU.map(m=>m.category)))];
+
+    document.getElementById("restoName").textContent = restaurantInfo.name;
+    document.getElementById("restoNameSub").textContent = "Scan. Order. Enjoy.";
+    if(restaurantInfo.brand_color){
+      document.querySelectorAll(".topbar").forEach(t=>t.style.background = restaurantInfo.brand_color);
+    }
+    document.getElementById("menuBackBtn").onclick = ()=>{ window.location.search = ""; };
+    document.getElementById("orderTypeChip").textContent = preTable ? `Table ${preTable}` : "Order here";
+
+    renderTabs();
+    renderMenu();
+  }catch(e){
+    wrap.innerHTML = `<div class="empty">Couldn't load the menu. Please check your connection and reload.</div>`;
+  }
+}
+
 function renderTabs(){
   const wrap = document.getElementById("tabs");
   wrap.innerHTML = "";
@@ -473,19 +529,27 @@ function renderTabs(){
     el.className = "tab" + (i===0 ? " active":"");
     el.textContent = c;
     el.onclick = ()=>{
-      document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+      document.querySelectorAll("#tabs .tab").forEach(t=>t.classList.remove("active"));
       el.classList.add("active");
-      document.getElementById("sec-"+c.replace(/\s+/g,"")).scrollIntoView({behavior:"smooth", block:"start"});
+      const target = document.getElementById("sec-"+c.replace(/\s+/g,""));
+      if(target) target.scrollIntoView({behavior:"smooth", block:"start"});
     };
     wrap.appendChild(el);
   });
+}
+
+function toggleVegOnly(){
+  vegOnly = !vegOnly;
+  document.getElementById("vegSwitch").classList.toggle("on", vegOnly);
+  renderMenu();
 }
 
 function renderMenu(){
   const wrap = document.getElementById("menuWrap");
   wrap.innerHTML = "";
   CATEGORIES.forEach(cat=>{
-    const items = cat==="Bestsellers" ? MENU.filter(m=>m.best) : MENU.filter(m=>m.cat===cat);
+    let items = cat==="Bestsellers" ? MENU.filter(m=>m.is_bestseller) : MENU.filter(m=>m.category===cat);
+    if(vegOnly) items = items.filter(m=>m.veg);
     if(!items.length) return;
     const label = document.createElement("div");
     label.className = "section-label";
@@ -493,25 +557,27 @@ function renderMenu(){
     label.textContent = cat;
     wrap.appendChild(label);
     items.forEach(item=>{
-      const card = renderItemCard(item);
-      wrap.appendChild(card);
+      wrap.appendChild(renderItemCard(item));
       renderActions(item.id);
-      loadFoodImage(item);
     });
   });
+  if(!wrap.children.length){
+    wrap.innerHTML = `<div class="empty">No veg items match right now — try switching off "Veg only".</div>`;
+  }
 }
 
 function renderItemCard(item){
   const card = document.createElement("div");
-  card.className = "item-card";
+  card.className = "item-card" + (item.is_available ? "" : " unavailable");
   card.id = "card-"+item.id;
   card.innerHTML = `
-    <div class="item-icon" id="icon-${item.id}" onclick="quickAdd(${item.id})" title="Tap to add to cart">${ICONS[item.icon]}</div>
+    <div class="item-icon">${(item.name||"?").charAt(0)}</div>
     <div class="item-body">
       <div class="item-top">
         <span class="veg-dot ${item.veg?'':'nonveg'}"></span>
         <span class="item-name">${item.name}</span>
-        ${item.best ? '<span class="best-badge">Bestseller</span>' : ''}
+        ${item.is_bestseller ? '<span class="best-badge">Bestseller</span>' : ''}
+        ${!item.is_available ? '<span class="soldout-badge">Sold out</span>' : ''}
       </div>
       <div class="item-price">₹${item.price}</div>
       <div class="item-actions" id="actions-${item.id}"></div>
@@ -519,56 +585,25 @@ function renderItemCard(item){
   return card;
 }
 
-/* ---------------- Real food photos (Foodish API) ---------------- */
-const foodImageCache = {};
-function loadFoodImage(item){
-  if(!item.photo) return; // no matching photo category — illustrated icon stays
-  if(foodImageCache[item.id]){ applyFoodImage(item.id, foodImageCache[item.id]); return; }
-  fetch(`https://foodish-api.com/api/images/${item.photo}`)
-    .then(r=>r.json())
-    .then(data=>{
-      if(data && data.image){
-        foodImageCache[item.id] = data.image;
-        applyFoodImage(item.id, data.image);
-      }
-    })
-    .catch(()=>{ /* fetch failed — illustrated icon stays as a graceful fallback */ });
-}
-function applyFoodImage(id, url){
-  const el = document.getElementById("icon-"+id);
-  if(!el) return;
-  const test = new Image();
-  test.onload = ()=>{ el.innerHTML = `<img src="${url}" alt="">`; };
-  test.onerror = ()=>{ /* keep illustrated icon */ };
-  test.src = url;
-}
-
-/* Tapping the dish photo/icon adds one unit straight to the cart */
-function quickAdd(id){
-  cart[id] = (cart[id]||0) + 1;
-  renderActions(id);
-  updateCartBar();
-  const el = document.getElementById("icon-"+id);
-  if(el){
-    el.style.transform = "scale(0.9)";
-    setTimeout(()=>{ el.style.transform = ""; }, 140);
-  }
-}
-
 function renderActions(id){
   const el = document.getElementById("actions-"+id);
+  if(!el) return;
+  const item = MENU.find(m=>m.id===id);
+  if(!item.is_available){
+    el.innerHTML = `<span class="hint">Currently unavailable</span>`;
+    return;
+  }
   const qty = cart[id] || 0;
   if(qty===0){
-    el.innerHTML = `<button class="add-btn" onclick="addItem(${id})">Add</button>`;
+    el.innerHTML = `<button class="add-btn" onclick="addItem('${id}')">Add</button>`;
   } else {
     el.innerHTML = `<div class="qty-stepper">
-      <button onclick="changeQty(${id},-1)">−</button>
+      <button onclick="changeQty('${id}',-1)">−</button>
       <span>${qty}</span>
-      <button onclick="changeQty(${id},1)">+</button>
+      <button onclick="changeQty('${id}',1)">+</button>
     </div>`;
   }
 }
-
 function addItem(id){ cart[id]=1; renderActions(id); updateCartBar(); }
 function changeQty(id, delta){
   cart[id] = (cart[id]||0)+delta;
@@ -576,15 +611,13 @@ function changeQty(id, delta){
   renderActions(id);
   updateCartBar();
 }
-
 function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
 function cartSubtotal(){
   return Object.entries(cart).reduce((sum,[id,qty])=>{
-    const item = MENU.find(m=>m.id==id);
-    return sum + item.price*qty;
+    const item = MENU.find(m=>m.id===id);
+    return sum + (item ? item.price*qty : 0);
   },0);
 }
-
 function updateCartBar(){
   const bar = document.getElementById("cartBar");
   const n = cartCount();
@@ -596,200 +629,526 @@ function updateCartBar(){
   }
 }
 
+/* ---------------- Reserve a table (entry point without adding food first) ---------------- */
+function openReservationFlow(){
+  setOrderType("dinein");
+  setBookingType("advance");
+  goTo("cart");
+}
+
 /* ---------------- Cart screen ---------------- */
 function renderCart(){
   const wrap = document.getElementById("cartLines");
   const entries = Object.entries(cart);
   if(!entries.length){
-    wrap.innerHTML = `<div class="empty">Your cart is empty.<br>Go back and add something tasty.</div>`;
+    if(orderType==="dinein" && bookingType==="advance"){
+      wrap.innerHTML = `<div class="empty">No dishes added — that's fine, you can order when you arrive.<br>Go back if you'd like to pre-order something.</div>`;
+    } else {
+      wrap.innerHTML = `<div class="empty">Your cart is empty.<br>Go back and add something tasty.</div>`;
+    }
   } else {
     wrap.innerHTML = entries.map(([id,qty])=>{
-      const item = MENU.find(m=>m.id==id);
-      return `<div class="cart-line">
-        <span class="nm">${item.name} × ${qty}</span>
-        <span class="pr">₹${item.price*qty}</span>
-      </div>`;
+      const item = MENU.find(m=>m.id===id);
+      return `<div class="cart-line"><span class="nm">${item.name} × ${qty}</span><span class="pr">₹${item.price*qty}</span></div>`;
     }).join("");
   }
-  const sub = cartSubtotal();
-  const tax = Math.round(sub*0.05);
-  document.getElementById("sumSubtotal").textContent = "₹"+sub;
-  document.getElementById("sumTax").textContent = "₹"+tax;
-  document.getElementById("sumTotal").textContent = "₹"+(sub+tax);
-  document.getElementById("placeOrderBtn").disabled = entries.length===0;
+
+  const isDepositOnly = !entries.length && orderType==="dinein" && bookingType==="advance";
+  let sub, tax, total;
+  if(isDepositOnly){
+    sub = Number(restaurantInfo.advance_deposit || 100);
+    tax = 0;
+    total = sub;
+    document.getElementById("sumSubtotal").previousElementSibling; // no-op, keep structure
+    document.getElementById("totalsCard").innerHTML = `
+      <div class="totals-row"><span>Table reservation advance</span><span>₹${sub}</span></div>
+      <div class="totals-row grand"><span>To pay now</span><span>₹${total}</span></div>`;
+  } else {
+    sub = cartSubtotal();
+    tax = Math.round(sub*0.05);
+    total = sub+tax;
+    document.getElementById("totalsCard").innerHTML = `
+      <div class="totals-row"><span>Item total</span><span>₹${sub}</span></div>
+      <div class="totals-row"><span>Taxes &amp; charges (5%)</span><span>₹${tax}</span></div>
+      <div class="totals-row grand"><span>To pay</span><span>₹${total}</span></div>`;
+  }
+
+  const canProceed = entries.length>0 || (orderType==="dinein" && bookingType==="advance");
+  document.getElementById("placeOrderBtn").disabled = !canProceed;
+
+  if(preTable){
+    document.getElementById("tableNumber").value = preTable;
+    document.getElementById("tableNumber").disabled = true;
+  }
+
+  if(bookingType==="advance") renderDateChips();
 }
 
 function setOrderType(t){
   orderType = t;
   document.getElementById("opt-dinein").classList.toggle("selected", t==="dinein");
   document.getElementById("opt-takeaway").classList.toggle("selected", t==="takeaway");
+  document.getElementById("dineinWhenWrap").style.display = t==="dinein" ? "block" : "none";
+  if(t==="takeaway") setBookingType("now");
+  else refreshBookingUi();
+  renderCart();
 }
 
-/* ---------------- Token ---------------- */
-function generateToken(){
-  const n = Math.floor(100 + Math.random()*900); // random 3-digit
-  return "TJ-" + n;
+function setBookingType(t){
+  bookingType = t;
+  document.getElementById("opt-now").classList.toggle("selected", t==="now");
+  document.getElementById("opt-advance").classList.toggle("selected", t==="advance");
+  refreshBookingUi();
+  renderCart();
 }
 
-/* ---------------- Order placement ---------------- */
-function placeOrder(){
+function refreshBookingUi(){
+  const isDineinNow = orderType==="dinein" && bookingType==="now";
+  const isDineinAdvance = orderType==="dinein" && bookingType==="advance";
+  document.getElementById("tableNumberWrap").style.display = isDineinNow ? "block" : "none";
+  document.getElementById("reservationWrap").style.display = isDineinAdvance ? "block" : "none";
+  document.getElementById("cartHeading").textContent = isDineinAdvance ? "Reserve a table" : "Your order";
+  document.getElementById("placeOrderBtn").textContent = isDineinAdvance ? "Proceed to pay & reserve" : "Proceed to pay";
+  if(isDineinAdvance) renderTimeSlotChips();
+}
+
+function renderDateChips(){
+  const wrap = document.getElementById("dateChips");
+  wrap.innerHTML = "";
+  for(let i=0;i<=MAX_ADVANCE_DAYS;i++){
+    const d = new Date();
+    d.setDate(d.getDate()+i);
+    const label = i===0 ? "Today" : i===1 ? "Tomorrow" : d.toLocaleDateString("en-IN",{weekday:"short",day:"numeric"});
+    const chip = document.createElement("div");
+    chip.className = "tab" + (i===selectedDateOffset ? " active" : "");
+    chip.textContent = label;
+    chip.onclick = ()=>{ selectedDateOffset = i; renderDateChips(); };
+    wrap.appendChild(chip);
+  }
+}
+
+function setMealPeriod(period){
+  mealPeriod = period;
+  document.getElementById("opt-lunch").classList.toggle("selected", period==="lunch");
+  document.getElementById("opt-dinner").classList.toggle("selected", period==="dinner");
+  selectedSlot = (period==="lunch" ? LUNCH_SLOTS : DINNER_SLOTS)[0];
+  renderTimeSlotChips();
+}
+function renderTimeSlotChips(){
+  const wrap = document.getElementById("timeSlotChips");
+  wrap.innerHTML = "";
+  const slots = mealPeriod==="lunch" ? LUNCH_SLOTS : DINNER_SLOTS;
+  slots.forEach(s=>{
+    const chip = document.createElement("div");
+    chip.className = "tab" + (s===selectedSlot ? " active" : "");
+    chip.textContent = s;
+    chip.onclick = ()=>{ selectedSlot = s; renderTimeSlotChips(); };
+    wrap.appendChild(chip);
+  });
+}
+function changeGuests(delta){
+  guests = Math.max(1, Math.min(20, guests+delta));
+  document.getElementById("guestsCount").textContent = guests;
+}
+function buildScheduledIso(){
+  const d = new Date();
+  d.setDate(d.getDate()+selectedDateOffset);
+  const match = selectedSlot.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  let hour = parseInt(match[1],10);
+  const minute = parseInt(match[2],10);
+  const isPm = /pm/i.test(match[3]);
+  if(isPm && hour!==12) hour += 12;
+  if(!isPm && hour===12) hour = 0;
+  d.setHours(hour, minute, 0, 0);
+  return d.toISOString();
+}
+
+/* ---------------- Build the pending order & go to payment ---------------- */
+function goToPayment(){
+  const errEl = document.getElementById("cartError");
+  errEl.style.display = "none";
   const name = document.getElementById("custName").value.trim();
   const phone = document.getElementById("custPhone").value.trim();
-  if(!name || phone.length<10){
-    alert("Please enter your name and a valid 10-digit phone number.");
+  const tableNumber = document.getElementById("tableNumber").value.trim();
+  const notes = document.getElementById("custNotes").value.trim();
+  const isDineinNow = orderType==="dinein" && bookingType==="now";
+  const isDineinAdvance = orderType==="dinein" && bookingType==="advance";
+
+  if(!name || !/^\d{10}$/.test(phone)){
+    showCartError("Please enter your name and a valid 10-digit phone number.");
     return;
   }
-  const sub = cartSubtotal();
-  const tax = Math.round(sub*0.05);
-  const total = sub+tax;
-  const items = Object.entries(cart).map(([id,qty])=>{
-    const item = MENU.find(m=>m.id==id);
-    return {name:item.name, qty, price:item.price};
-  });
+  if(isDineinNow && !tableNumber){
+    showCartError("Please enter your table number.");
+    return;
+  }
+  if(!isDineinAdvance && cartCount()===0){
+    showCartError("Please add at least one item to your cart.");
+    return;
+  }
 
-  currentOrder = {
-    token: generateToken(),
-    name, phone, orderType, items, subtotal:sub, tax, total,
-    time: new Date().toLocaleString('en-IN', {hour12:true})
+  const items = Object.entries(cart).map(([id,qty])=>({id, qty}));
+
+  pendingOrder = {
+    restaurant: restaurantSlug, name, phone,
+    order_type: orderType,
+    booking_type: isDineinAdvance ? "advance" : "now",
+    table_number: isDineinNow ? tableNumber : "",
+    scheduled_at: isDineinAdvance ? buildScheduledIso() : "",
+    party_size: isDineinAdvance ? guests : null,
+    items, notes
   };
 
-  document.getElementById("payToken").textContent = currentOrder.token;
+  const sub = items.length ? cartSubtotal() : (isDineinAdvance ? Number(restaurantInfo.advance_deposit||100) : 0);
+  const tax = items.length ? Math.round(sub*0.05) : 0;
+  const total = sub+tax;
+  pendingOrder._displayTotal = total;
+
+  if(restaurantInfo.razorpay_key_id){
+    startRazorpayCheckout(total);
+    return;
+  }
+
   document.getElementById("payAmount").textContent = "₹"+total;
+  document.getElementById("payDepositNote").style.display = (isDineinAdvance && !items.length) ? "block" : "none";
+  document.getElementById("payKicker").textContent = isDineinAdvance ? "Amount to pay to confirm your table" : "Amount to pay";
+
+  const hasUpi = !!(restaurantInfo.upi_id || restaurantInfo.payment_qr_url);
+  document.getElementById("upiCard").style.display = hasUpi ? "block" : "none";
+  document.getElementById("counterCard").style.display = hasUpi ? "none" : "block";
+  document.getElementById("payConfirmBtn").textContent = hasUpi ? "I've completed the payment" : "Confirm — I'll pay at the counter";
+  pendingOrder.payment_method = hasUpi ? "upi" : "counter";
+  document.getElementById("utrInput").value = "";
+
   goTo("pay");
-  renderPaymentQr();
+  if(hasUpi) renderPaymentQr(total);
+}
+
+/* ---------------- Razorpay Checkout (automatic, verified payment) ---------------- */
+async function startRazorpayCheckout(total){
+  const btn = document.getElementById("placeOrderBtn");
+  const originalLabel = btn.textContent;
+  btn.disabled = true; btn.textContent = "Preparing payment…";
+
+  try{
+    const res = await fetch(`${API}/create_payment_order`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(pendingOrder)
+    });
+    const data = await res.json();
+    if(!res.ok){
+      showCartError(data.error || "Couldn't start payment — please try again.");
+      btn.disabled = false; btn.textContent = originalLabel;
+      return;
+    }
+
+    const rzp = new Razorpay({
+      key: data.key_id,
+      order_id: data.razorpay_order_id,
+      amount: data.amount,
+      currency: "INR",
+      name: restaurantInfo.name,
+      description: pendingOrder.booking_type==="advance" ? "Table reservation" : "Food order",
+      prefill: { name: pendingOrder.name, contact: pendingOrder.phone },
+      theme: { color: restaurantInfo.brand_color || "#1B3A2B" },
+      handler: function(response){
+        confirmRazorpayPayment(response, data.razorpay_order_id);
+      },
+      modal: {
+        ondismiss: function(){
+          btn.disabled = false; btn.textContent = originalLabel;
+        }
+      }
+    });
+    rzp.on("payment.failed", function(){
+      showCartError("Payment failed — please try again.");
+      btn.disabled = false; btn.textContent = originalLabel;
+    });
+    rzp.open();
+  }catch(e){
+    showCartError("Network error — please check your connection and try again.");
+    btn.disabled = false; btn.textContent = originalLabel;
+  }
+}
+
+async function confirmRazorpayPayment(response, razorpayOrderId){
+  const btn = document.getElementById("placeOrderBtn");
+  btn.textContent = "Confirming payment…";
+  try{
+    const res = await fetch(`${API}/confirm_razorpay_payment`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        razorpay_order_id: razorpayOrderId,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature: response.razorpay_signature
+      })
+    });
+    const data = await res.json();
+    if(!res.ok){
+      showCartError((data.error || "Payment verification failed") + " — if money was deducted, please show this to restaurant staff along with your phone number.");
+      btn.disabled = false; btn.textContent = "Proceed to pay";
+      return;
+    }
+    pendingOrder.payment_method = "razorpay";
+    currentOrder = data;
+    fillConfirmation(data);
+    goTo("confirm");
+    startTracking(data.order_id);
+  }catch(e){
+    showCartError("Payment succeeded but we couldn't confirm it here — if money was deducted, please show this to restaurant staff along with your phone number.");
+    btn.disabled = false; btn.textContent = "Proceed to pay";
+  }
+}
+function showCartError(msg){
+  const el = document.getElementById("cartError");
+  el.textContent = msg;
+  el.style.display = "block";
 }
 
 /* ---------------- Payment ---------------- */
-function buildUpiUrl(){
-  const amt = currentOrder.total.toFixed(2);
-  const note = encodeURIComponent("Tejvix order " + currentOrder.token);
-  const txnRef = encodeURIComponent(currentOrder.token.replace(/[^a-zA-Z0-9]/g,"") + Date.now());
-  return `upi://pay?pa=${encodeURIComponent(cfg.upi)}&pn=${encodeURIComponent(cfg.name)}&am=${amt}&cu=INR&tn=${note}&tr=${txnRef}`;
+function buildUpiUrl(total){
+  const amt = total.toFixed ? total.toFixed(2) : total;
+  const note = encodeURIComponent("Tejvix Food order — " + pendingOrder.name);
+  const txnRef = encodeURIComponent("TF" + Date.now());
+  const upi = restaurantInfo.upi_id || "";
+  return `upi://pay?pa=${encodeURIComponent(upi)}&pn=${encodeURIComponent(restaurantInfo.name)}&am=${amt}&cu=INR&tn=${note}&tr=${txnRef}`;
 }
-function renderPaymentQr(){
+function renderPaymentQr(total){
   const box = document.getElementById("upiQrBox");
   box.innerHTML = "";
-  new QRCode(box, {
-    text: buildUpiUrl(),
-    width: 180, height: 180,
-    colorDark: "#1B3A2B", colorLight: "#ffffff"
-  });
+  if(restaurantInfo.payment_qr_url){
+    box.innerHTML = `<img src="${restaurantInfo.payment_qr_url}" style="width:180px;height:180px;object-fit:contain;">`;
+  } else if(restaurantInfo.upi_id){
+    new QRCode(box, { text: buildUpiUrl(total), width:180, height:180, colorDark:"#1B3A2B", colorLight:"#ffffff" });
+  }
+}
 
-  // Reset wait state every time a fresh payment screen is shown
-  const waitMsg = document.getElementById("payWaitMsg");
-  const confirmBtn = document.getElementById("confirmPayBtn");
-  waitMsg.style.display = "block";
-  confirmBtn.style.display = "none";
+/* ---------------- Submit the order (only after payment) ---------------- */
+async function submitOrder(){
+  const errEl = document.getElementById("payError");
+  errEl.style.display = "none";
 
-  const WAIT_SECONDS = 50;
-  let remaining = WAIT_SECONDS;
-  waitMsg.textContent = `Please scan the QR code and complete the payment in your UPI app. Confirm button will appear in ${remaining}s…`;
-
-  if(window._payTimerInterval) clearInterval(window._payTimerInterval);
-  window._payTimerInterval = setInterval(()=>{
-    remaining--;
-    if(remaining>0){
-      waitMsg.textContent = `Please scan the QR code and complete the payment in your UPI app. Confirm button will appear in ${remaining}s…`;
-    } else {
-      clearInterval(window._payTimerInterval);
-      waitMsg.style.display = "none";
-      confirmBtn.style.display = "block";
+  if(pendingOrder.payment_method==="upi"){
+    const utr = document.getElementById("utrInput").value.trim();
+    if(!/^[a-zA-Z0-9]{6,20}$/.test(utr)){
+      errEl.textContent = "Please enter the UPI reference/UTR number shown in your payment app after paying.";
+      errEl.style.display = "block";
+      return;
     }
-  }, 1000);
+    pendingOrder.payment_utr = utr;
+  }
+
+  const btn = document.getElementById("payConfirmBtn");
+  btn.disabled = true; btn.textContent = "Placing order…";
+
+  try{
+    const res = await fetch(`${API}/order`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(pendingOrder)
+    });
+    const data = await res.json();
+    if(!res.ok){
+      errEl.textContent = data.error || "Something went wrong placing your order.";
+      errEl.style.display = "block";
+      btn.disabled = false; btn.textContent = pendingOrder.payment_method==="upi" ? "I've completed the payment" : "Confirm — I'll pay at the counter";
+      return;
+    }
+    currentOrder = data;
+    fillConfirmation(data);
+    goTo("confirm");
+    startTracking(data.order_id);
+  }catch(e){
+    errEl.textContent = "Network error — please check your connection and try again.";
+    errEl.style.display = "block";
+  }
+  btn.disabled = false; btn.textContent = pendingOrder.payment_method==="upi" ? "I've completed the payment" : "Confirm — I'll pay at the counter";
 }
 
-function confirmPayment(){
-  // Customer scans the QR, pays in their own UPI app, then taps this button to confirm.
-  fillConfirmation(currentOrder);
-  goTo("confirm");
-  setTimeout(()=>{
-    openWhatsApp();
-    logOrderToSheet(currentOrder); // logged right after WhatsApp confirmation opens
-  }, 500);
-}
-
+/* ---------------- Confirmation + live tracking ---------------- */
 function fillConfirmation(order){
+  document.getElementById("confRestoName").textContent = restaurantInfo.name;
   document.getElementById("confToken").textContent = order.token;
-  document.getElementById("confName").textContent = order.name;
-  document.getElementById("confType").textContent = order.orderType==="dinein" ? "Dine-in" : "Takeaway";
-  document.getElementById("confItems").textContent = order.items.map(i=>`${i.name} x${i.qty}`).join(", ");
+  document.getElementById("confName").textContent = pendingOrder.name || "—";
+  document.getElementById("confType").textContent = order.order_type==="dinein" ? "Dine-in" : "Takeaway";
+  document.getElementById("confItems").textContent = order.items.length ? order.items.map(i=>`${i.name} x${i.qty}`).join(", ") : "To be ordered on arrival";
   document.getElementById("confAmount").textContent = "₹"+order.total;
+  updatePaymentUi(order.payment_status);
+
+  const whenRow = document.getElementById("confWhenRow");
+  const guestsRow = document.getElementById("confGuestsRow");
+  if(order.booking_type==="advance"){
+    const when = new Date(order.scheduled_at).toLocaleString("en-IN",{weekday:"short", day:"numeric", month:"short", hour:"numeric", minute:"2-digit", hour12:true});
+    document.getElementById("confWhen").textContent = when;
+    document.getElementById("confGuests").textContent = order.party_size;
+    whenRow.style.display = "flex";
+    guestsRow.style.display = "flex";
+    document.getElementById("confSub").textContent = "Reservation confirmed — show your name at the counter when you arrive";
+  } else {
+    whenRow.style.display = "none";
+    guestsRow.style.display = "none";
+    document.getElementById("confSub").textContent = order.order_type==="dinein"
+      ? `Table ${order.table_number} — show this token to staff`
+      : `Takeaway — show this token at the counter`;
+  }
+  updateStatusUi(order.status);
+}
+
+const STATUS_STEPS = ["received","preparing","ready","served"];
+function updatePaymentUi(paymentStatus){
+  document.getElementById("unverifiedBanner").style.display = paymentStatus==="unverified" ? "block" : "none";
+  let paymentLabel;
+  if(pendingOrder.payment_method==="razorpay") paymentLabel = "Paid via Razorpay ✅";
+  else if(pendingOrder.payment_method!=="upi") paymentLabel = "Confirmed — pay at counter";
+  else paymentLabel = (paymentStatus==="paid" ? "Verified — Paid via UPI ✅" : "Awaiting staff confirmation…");
+  document.getElementById("confPayment").textContent = paymentLabel;
+}
+function updateStatusUi(status){
+  const stepperTrack = document.getElementById("stepperTrack");
+  if(status==="scheduled"){
+    stepperTrack.style.display = "none";
+  } else {
+    stepperTrack.style.display = "flex";
+    STATUS_STEPS.forEach((s,i)=>{
+      const el = document.getElementById("step-"+s);
+      el.classList.remove("done","current");
+      const idx = STATUS_STEPS.indexOf(status);
+      if(i < idx) el.classList.add("done");
+      else if(i === idx) el.classList.add("current");
+    });
+  }
+  const pill = document.getElementById("statusPill");
+  const labels = {
+    scheduled:"● Reservation confirmed", received:"● Order received", preparing:"● Being prepared",
+    ready:"● Ready — please collect", served:"● Served — enjoy your meal!", cancelled:"● Order cancelled"
+  };
+  pill.textContent = labels[status] || "● Order received";
+  pill.classList.toggle("pending", status==="received" || status==="preparing" || status==="scheduled");
+
+  if(status==="served"){
+    document.getElementById("reviewCard").style.display = "block";
+  }
+  lastKnownStatus = status;
+}
+
+function startTracking(orderId){
+  if(trackPoll) clearInterval(trackPoll);
+  const poll = async ()=>{
+    try{
+      const res = await fetch(`${API}/track?order_id=${encodeURIComponent(orderId)}`);
+      if(!res.ok) return;
+      const data = await res.json();
+      if(data.status!=="scheduled" && data.token) document.getElementById("confToken").textContent = data.token;
+      if(lastKnownStatus==="scheduled" && data.status!=="scheduled" && data.status!=="cancelled"){
+        document.getElementById("confSub").textContent = `Table ${data.table_number||"—"} — show this token to staff`;
+        document.getElementById("confWhenRow").style.display = "none";
+        document.getElementById("confGuestsRow").style.display = "none";
+      }
+      updatePaymentUi(data.payment_status);
+      updateStatusUi(data.status);
+      if(data.status==="cancelled") document.getElementById("unverifiedBanner").style.display = "none";
+      if(data.status==="served" || data.status==="cancelled") clearInterval(trackPoll);
+    }catch(e){ /* keep polling silently on a transient network error */ }
+  };
+  poll();
+  trackPoll = setInterval(poll, 5000);
 }
 
 function openWhatsApp(){
+  if(!currentOrder || !restaurantInfo) return;
   const o = currentOrder;
-  const lines = [
-    `*Payment completed — order ${o.token}*`,
-    `Name: ${o.name}`,
-    `Phone: ${o.phone}`,
-    `Type: ${o.orderType==="dinein"?"Dine-in":"Takeaway"}`,
+  const paymentLine = pendingOrder.payment_method==="razorpay"
+    ? `Payment: Razorpay ✅ Paid`
+    : pendingOrder.payment_method==="upi"
+    ? `Payment: UPI, UTR ${pendingOrder.payment_utr||"—"} (${o.payment_status==="paid" ? "Verified ✅" : "Awaiting staff confirmation"})`
+    : `Payment: Pay at counter`;
+  const lines = o.booking_type==="advance" ? [
+    `*Table reservation — ${restaurantInfo.name}*`,
+    `Name: ${pendingOrder.name}`,
+    `Phone: ${pendingOrder.phone}`,
+    `Guests: ${o.party_size}`,
+    `When: ${new Date(o.scheduled_at).toLocaleString("en-IN",{weekday:"short", day:"numeric", month:"short", hour:"numeric", minute:"2-digit", hour12:true})}`,
+    ``,
+    ...(o.items.length ? o.items.map(i=>`${i.name} x${i.qty} — ₹${i.price*i.qty}`) : ["(Will order on arrival)"]),
+    ``,
+    `Amount: ₹${o.total}`,
+    paymentLine
+  ] : [
+    `*Payment receipt — order ${o.token} — ${restaurantInfo.name}*`,
+    `Name: ${pendingOrder.name}`,
+    `Phone: ${pendingOrder.phone}`,
+    `Type: ${o.order_type==="dinein" ? "Dine-in (Table "+o.table_number+")" : "Takeaway"}`,
     ``,
     ...o.items.map(i=>`${i.name} x${i.qty} — ₹${i.price*i.qty}`),
     ``,
-    `Total paid: ₹${o.total}`,
-    `Payment: Completed via UPI`,
-    ``,
-    `Your order will be prepared in 45 minutes. Please come and collect from the restaurant.`,
-    `Please show this payment confirmation at the counter while collecting your order.`
+    `Total: ₹${o.total}`,
+    paymentLine
   ];
   const text = encodeURIComponent(lines.join("\n"));
-  window.open(`https://wa.me/${cfg.whatsapp}?text=${text}`, "_blank");
+  const to = restaurantInfo.whatsapp || "";
+  window.open(`https://wa.me/${to}?text=${text}`, "_blank");
 }
 
 function startNewOrder(){
   cart = {};
   currentOrder = null;
+  pendingOrder = null;
+  lastKnownStatus = null;
+  if(trackPoll) clearInterval(trackPoll);
   updateCartBar();
   renderMenu();
   goTo("menu");
 }
 
-/* ---------------- Google Sheet logging ---------------- */
-function logOrderToSheet(order){
-  if(!cfg.sheet) return; // not configured yet
-  const payload = {
-    token: order.token, name: order.name, phone: order.phone,
-    orderType: order.orderType, items: order.items.map(i=>`${i.name} x${i.qty}`).join("; "),
-    total: order.total, timestamp: new Date().toISOString()
-  };
-  fetch(cfg.sheet, {
-    method: "POST",
-    mode: "no-cors",
-    headers: {"Content-Type":"text/plain"},
-    body: JSON.stringify(payload)
-  }).catch(()=>{ /* logging failure should never block the order */ });
-}
-
-/* ---------------- Admin / setup ---------------- */
-function loadConfigForm(){
-  document.getElementById("cfgName").value = cfg.name;
-  document.getElementById("cfgWhatsapp").value = cfg.whatsapp;
-  document.getElementById("cfgUpi").value = cfg.upi;
-  document.getElementById("cfgSheet").value = cfg.sheet;
-  document.getElementById("restoNameSub").textContent = cfg.name + " · Scan. Order. Enjoy.";
-
-  document.getElementById("qrbox").innerHTML = "";
-  new QRCode(document.getElementById("qrbox"), {
-    text: window.location.href.split('?')[0],
-    width: 180, height: 180,
-    colorDark: "#1B3A2B", colorLight: "#ffffff"
+/* ---------------- Reviews ---------------- */
+function wireStars(rowId){
+  const row = document.getElementById(rowId);
+  row.querySelectorAll("span").forEach(star=>{
+    star.onclick = ()=>{
+      const v = Number(star.dataset.v);
+      row.dataset.selected = v;
+      row.querySelectorAll("span").forEach(s=> s.classList.toggle("on", Number(s.dataset.v) <= v));
+    };
   });
 }
+wireStars("starsRow");
 
-function saveConfig(){
-  cfg.name = document.getElementById("cfgName").value.trim() || "Tejvix";
-  cfg.whatsapp = document.getElementById("cfgWhatsapp").value.trim();
-  cfg.upi = document.getElementById("cfgUpi").value.trim();
-  cfg.sheet = document.getElementById("cfgSheet").value.trim();
-  localStorage.setItem("tejvix_cfg", JSON.stringify(cfg));
-  document.getElementById("restoNameSub").textContent = cfg.name + " · Scan. Order. Enjoy.";
-  alert("Settings saved on this device.");
+async function submitReview(){
+  const row = document.getElementById("starsRow");
+  const rating = Number(row.dataset.selected || 0);
+  if(!rating){ alert("Please tap a star to rate your visit."); return; }
+  const comment = document.getElementById("reviewComment").value.trim();
+  try{
+    await fetch(`${API}/reviews`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ order_id: currentOrder.order_id, rating, comment })
+    });
+    document.getElementById("reviewThanks").style.display = "block";
+  }catch(e){ alert("Couldn't submit your rating — please try again."); }
+}
+async function submitReviewStandalone(){
+  const row = document.getElementById("starsRowStandalone");
+  const rating = Number(row.dataset.selected || 0);
+  if(!rating){ alert("Please tap a star to rate your visit."); return; }
+  const comment = document.getElementById("reviewCommentStandalone").value.trim();
+  try{
+    await fetch(`${API}/reviews`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ order_id: reviewOrderId, rating, comment })
+    });
+    document.getElementById("reviewThanksStandalone").style.display = "block";
+  }catch(e){ alert("Couldn't submit your rating — please try again."); }
+}
+
+/* ---------------- PWA service worker ---------------- */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=> navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
 
 /* ---------------- Init ---------------- */
-renderTabs();
-renderMenu();
-document.getElementById("restoNameSub").textContent = cfg.name + " · Scan. Order. Enjoy.";
+setOrderType("dinein");
+setMealPeriod("lunch");
+init();
 </script>
 </body>
 </html>
